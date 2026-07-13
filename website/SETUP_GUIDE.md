@@ -14,6 +14,12 @@ This is free and simple, but the download link on that Thank You page isn't trul
 
 ---
 
+## 1.5. Stripe sandbox API keys
+
+Your sandbox (test) publishable and secret keys are stored in `.stripe-keys.local.md` at the project root — that file is git-ignored and will never be committed or pushed. Don't paste the actual key values into this guide or any other tracked file.
+
+---
+
 ## 2. Create your Stripe account (if you haven't)
 
 1. Go to stripe.com and sign up (free, no monthly fee)
