@@ -51,12 +51,7 @@ All five products share **one Stripe Payment Link** for now — see `index.html`
    - Build command: `npm install`
    - Start command: `npm start`
 4. Add environment variables (see `server/.env.example` for the full list): `DATABASE_URL` (the one from step 2), `FRONTEND_ORIGIN` (your deployed static site's URL), `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `JWT_SECRET` (any long random string), `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and optionally the `SMTP_*` vars for real email delivery.
-5. Once deployed, run the one-time setup from your local machine (pointed at the Render database via its **External Database URL**), or add a Render Shell/Job step:
-   ```bash
-   cd server
-   DATABASE_URL="<render external db url>" npm run migrate
-   DATABASE_URL="<render external db url>" ADMIN_EMAIL=you@example.com ADMIN_PASSWORD=... npm run seed:admin
-   ```
+5. Deploy. No shell access or manual migration step needed — the server creates its tables and provisions the admin login automatically on every boot (see `server/src/bootstrap.js`). Check the deploy logs for `Database schema is up to date.` and `Admin login ready: ...` to confirm it worked.
 
 Railway or Fly.io work the same way (Node web service + managed Postgres + the same env vars).
 
@@ -70,16 +65,13 @@ The `website/` folder is still plain HTML/CSS/JS — no build step:
 2. Drag the `website` folder onto [netlify.com](https://netlify.com) (or Vercel, or GitHub Pages), or connect the repo for auto-deploys.
 3. Make sure the backend's `FRONTEND_ORIGIN` env var includes this deployed site's URL (comma-separated if you have more than one, e.g. a preview URL + your real domain) so the browser's CORS check passes.
 
+**Status:** done — backend is live at https://honnibear-website.onrender.com, frontend at https://honnibear.netlify.app/. `FRONTEND_ORIGIN` on Render still needs updating to the Netlify URL (see checklist below).
+
 ---
 
-## 5. Create your admin login
+## 5. Your admin login
 
-Locally or via a one-off Render job:
-```bash
-cd server
-npm run seed:admin
-```
-This reads `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env` and creates (or updates) that admin account. Log in at `yourdomain.com/admin/login.html`.
+Nothing to run — the backend provisions the admin account automatically on every boot from the `ADMIN_EMAIL` / `ADMIN_PASSWORD` env vars you set in step 3. Log in at `yourdomain.com/admin/login.html`. To change the password, update `ADMIN_PASSWORD` in Render and redeploy.
 
 ---
 
@@ -100,9 +92,7 @@ See `server/.env.example` — every variable the backend needs, with comments on
 
 - [ ] Stripe Payment Link redirects to `order-received.html?session_id={CHECKOUT_SESSION_ID}`
 - [ ] Stripe webhook configured for `checkout.session.completed`, pointed at `/api/webhooks/stripe`
-- [ ] Backend deployed with all required env vars set
-- [ ] `npm run migrate` run against the production database
-- [ ] `npm run seed:admin` run to create your admin login
+- [ ] Backend deployed with all required env vars set (schema + admin login provision themselves on boot — check the deploy logs)
 - [ ] `website/js/config.js` points at the deployed backend URL
 - [ ] Static site deployed, and its URL is in the backend's `FRONTEND_ORIGIN`
 - [ ] Full test-mode purchase walked through end to end

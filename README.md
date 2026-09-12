@@ -2,9 +2,18 @@
 
 The brand site + order system for **Honnibear** — custom hand-drawn portrait commissions and custom-built love letter & wedding websites.
 
-**Live site:** _add your deployed URL here once live_
+**Live site:** https://honnibear.netlify.app/
+**Backend API:** https://honnibear-website.onrender.com
 **Etsy shop:** https://www.etsy.com/shop/Honnibear
 **Instagram:** https://www.instagram.com/honnibear_
+
+## Deployment status
+
+- ✅ Backend deployed on Render (Node/Express + Postgres), auto-migrating its schema and provisioning the admin login on every boot — no shell access needed.
+- ✅ Frontend deployed on Netlify.
+- ⏳ Stripe Payment Link redirect URL and webhook still need to be pointed at the URLs above (see `website/SETUP_GUIDE.md`, sections 2 and Stripe setup) before real purchases will flow end to end.
+- ⏳ Real SMTP credentials not yet configured — order/admin emails currently just log to the Render server console instead of sending.
+- ⏳ Product cards still use emoji placeholders instead of real commission/art samples.
 
 ---
 
@@ -75,21 +84,20 @@ All five products currently share **one Stripe Payment Link**. Each "Buy Now" bu
 cd server
 cp .env.example .env         # fill in your local Postgres URL, a JWT secret, etc.
 npm install
-npm run migrate              # creates tables
-npm run seed:admin           # creates your admin login from ADMIN_EMAIL/ADMIN_PASSWORD in .env
-npm run dev                  # http://localhost:4000
+npm run dev                  # http://localhost:4000 — auto-creates tables + admin login on boot
 
 # 2. Frontend (separate terminal)
 cd website
 python3 -m http.server 8080  # or any static file server
-# edit website/js/config.js if your API runs somewhere other than localhost:4000
+# edit website/js/config.js to point at http://localhost:4000 instead of the
+# deployed Render URL it defaults to
 ```
 
 Visit `http://localhost:8080/index.html`. To test the full flow locally without a real Stripe payment, you can POST a signed fake `checkout.session.completed` event straight to `/api/webhooks/stripe` (see `SETUP_GUIDE.md` for a ready-made example), then open `order-received.html?session_id=<the session id>`.
 
 ## Deployment
 
-See **[SETUP_GUIDE.md](website/SETUP_GUIDE.md)** for the full walkthrough: creating the Stripe webhook, deploying the backend + Postgres (Render is the suggested free-tier target), deploying the static site, and the go-live checklist.
+Backend is on Render, frontend is on Netlify (see URLs above). See **[SETUP_GUIDE.md](website/SETUP_GUIDE.md)** for the full walkthrough — what's left is pointing the Stripe Payment Link + webhook at these live URLs, per the "Deployment status" section above.
 
 ## License
 
