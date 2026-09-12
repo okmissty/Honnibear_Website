@@ -1,106 +1,109 @@
-# Honnibear Website — Setup Guide
+# Honnibear Setup Guide
 
-Your site is fully built and ready. Here's exactly what to do to make it live and take real payments.
-
----
-
-## 1. Understand how the payment flow works
-
-**Important honest note:** Stripe Payment Links process the *payment* but do not automatically deliver your PDF files. This site is built with the simplest possible workaround:
-
-`Customer clicks Buy Now → pays via Stripe → Stripe redirects to your Thank You page → Thank You page has the download link`
-
-This is free and simple, but the download link on that Thank You page isn't truly "locked" — anyone with the URL could technically access it. For your price point ($5-12) this is a completely normal and common approach used by many small shops. If you later want automatic, secure, session-locked delivery (so links can't be shared), look into **SendOwl** — it integrates directly with Stripe Payment Links with no coding required, for a small monthly fee.
+This covers everything to get the full-stack commission system live: the Stripe side, deploying the backend + database, deploying the static site, and testing the whole flow before sharing it.
 
 ---
 
-## 1.5. Stripe sandbox API keys
+## 1. How the order flow works
 
-Your sandbox (test) publishable and secret keys are stored in `.stripe-keys.local.md` at the project root — that file is git-ignored and will never be committed or pushed. Don't paste the actual key values into this guide or any other tracked file.
+```
+Customer clicks "Buy Now"
+  -> Stripe Payment Link (?client_reference_id=<product-slug>)
+  -> customer pays
+  -> Stripe sends a "checkout.session.completed" webhook to our backend
+  -> backend creates an order row in Postgres (status: paid) + emails the customer
+  -> Stripe redirects the customer to order-received.html?session_id=...
+  -> customer fills out the intake form (reference photos / letter / wedding details)
+  -> backend saves those details + files, order status -> details_submitted
+  -> Honnibear works the order from the admin dashboard, updating status as it goes
+  -> customer can check status any time on commission-status.html
+```
 
----
-
-## 2. Create your Stripe account (if you haven't)
-
-1. Go to stripe.com and sign up (free, no monthly fee)
-2. Complete their business verification (they'll ask for basic info about you/your shop)
-3. You'll pay Stripe's standard processing fee (2.9% + $0.30 per transaction) — no extra cost for using Payment Links
-
----
-
-## 3. Create a Payment Link for each product
-
-Repeat this for all 5 products:
-
-1. In your Stripe Dashboard, go to **Payment Links** > **Create payment link**
-2. Add a new product: name (e.g. "Printable Planner Set"), price (e.g. $5.50), and upload the product image if you'd like
-3. Under **After payment**, choose **"Redirect customers to your website"** and paste in the matching thank-you page URL (see table below — you'll fill in the real domain once hosted)
-4. Click **Create link** — Stripe gives you a URL like `https://buy.stripe.com/abc123`
-5. Copy that URL
-
-| Product | Placeholder in index.html | Redirect to |
-|---|---|---|
-| Printable Planner Set | STRIPE_LINK_PLANNER | yourdomain.com/thank-you-planner.html |
-| Budget Tracker Set | STRIPE_LINK_BUDGET | yourdomain.com/thank-you-budget.html |
-| Meal Planning & Grocery System | STRIPE_LINK_MEAL | yourdomain.com/thank-you-meal.html |
-| Fitness & Wellness Tracker | STRIPE_LINK_FITNESS | yourdomain.com/thank-you-fitness.html |
-| Digital Sticker Pack | STRIPE_LINK_STICKERS | yourdomain.com/thank-you-stickers.html |
+All five products share **one Stripe Payment Link** for now — see `index.html`'s Buy Now buttons, each of which appends `?client_reference_id=<slug>` (e.g. `full-body-commission`). That's how the backend tells products apart without five separate links. If you later create a dedicated Payment Link per product, just update the `href` on each Buy Now button — no backend changes needed as long as the slug still matches `server/src/services/catalog.js`.
 
 ---
 
-## 4. Replace the placeholders in the code
+## 2. Stripe setup
 
-Open `index.html` in any text editor (even Notepad or TextEdit works) and use Find & Replace for each:
-
-- STRIPE_LINK_PLANNER -> your real Stripe Payment Link URL for the planner
-- STRIPE_LINK_BUDGET, STRIPE_LINK_MEAL, STRIPE_LINK_FITNESS, STRIPE_LINK_STICKERS -> same idea
-- ETSY_LINK_PLANNER, ETSY_LINK_BUDGET, etc. -> the URL of each matching Etsy listing
-- ETSY_SHOP_LINK -> your Etsy shop homepage URL
-- PINTEREST_LINK, INSTAGRAM_LINK -> your social profile URLs
-- YOUR_EMAIL -> your contact email (appears in the footer and on thank-you pages)
-
-Then open each thank-you-*.html file and replace:
-- DOWNLOAD_LINK_PLANNER (and the matching one in each file) -> a real, direct link to that PDF file
-
----
-
-## 5. Host your product files somewhere downloadable
-
-You need somewhere for the actual PDF/zip files to live so the download links work. Easiest free options:
-- **Google Drive**: upload the file, right-click > Share > "Anyone with the link" > use that link
-- **Dropbox**: similar process, use the shared link (change the ending `?dl=0` to `?dl=1` so it downloads directly instead of opening a preview page)
-- Your own web host, if you have one, uploaded directly alongside the website files
+1. In your Stripe Dashboard, open the Payment Link already in use (or create one) and confirm **"After payment" -> "Don't show a confirmation page"** is *not* selected — instead choose **"Redirect customers to your website"** and set the redirect URL to:
+   ```
+   https://yourdomain.com/order-received.html?session_id={CHECKOUT_SESSION_ID}
+   ```
+   (Stripe substitutes `{CHECKOUT_SESSION_ID}` automatically.)
+2. Go to **Developers -> Webhooks -> Add endpoint**, set the URL to your deployed backend:
+   ```
+   https://your-backend.onrender.com/api/webhooks/stripe
+   ```
+   Subscribe to the `checkout.session.completed` event.
+3. Copy the endpoint's **Signing secret** (`whsec_...`) into your backend's `STRIPE_WEBHOOK_SECRET` env var.
+4. Copy your **Secret key** (`sk_test_...` while testing, `sk_live_...` when live) into `STRIPE_SECRET_KEY`.
 
 ---
 
-## 6. Put the website online
+## 3. Deploy the backend + database
 
-The site is plain HTML/CSS/JS — no special server needed. Easiest free options to go live:
+**Render** (suggested, has a free tier for both a web service and Postgres):
 
-- **Netlify** (easiest): go to netlify.com, drag your whole `website` folder onto the deploy page, done in under a minute. Free tier is plenty for this.
-- **Vercel**: similar drag-and-drop deploy flow at vercel.com
-- **GitHub Pages**: free if you're comfortable with GitHub
+1. Push this repo to GitHub if you haven't already.
+2. In Render: **New -> PostgreSQL** — create a free database, copy its **Internal Database URL**.
+3. In Render: **New -> Web Service** — point it at this repo, set:
+   - Root directory: `server`
+   - Build command: `npm install`
+   - Start command: `npm start`
+4. Add environment variables (see `server/.env.example` for the full list): `DATABASE_URL` (the one from step 2), `FRONTEND_ORIGIN` (your deployed static site's URL), `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `JWT_SECRET` (any long random string), `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and optionally the `SMTP_*` vars for real email delivery.
+5. Once deployed, run the one-time setup from your local machine (pointed at the Render database via its **External Database URL**), or add a Render Shell/Job step:
+   ```bash
+   cd server
+   DATABASE_URL="<render external db url>" npm run migrate
+   DATABASE_URL="<render external db url>" ADMIN_EMAIL=you@example.com ADMIN_PASSWORD=... npm run seed:admin
+   ```
 
-Any of these will give you a free URL (like honnibear.netlify.app), and you can connect a custom domain (like honnibear.com) later through the same dashboard if you buy one.
+Railway or Fly.io work the same way (Node web service + managed Postgres + the same env vars).
 
 ---
 
-## 7. Test before sharing publicly
+## 4. Deploy the static site
 
-1. Use Stripe's **test mode** first (toggle in the Stripe Dashboard) to make a fake purchase all the way through
-2. Confirm you land on the correct thank-you page and the download link works
-3. Only then switch Stripe to **live mode** and swap in your real (live) Payment Link URLs — test mode and live mode links are different!
+The `website/` folder is still plain HTML/CSS/JS — no build step:
+
+1. Edit `website/js/config.js` and set `window.HONNIBEAR_API_BASE` to your deployed backend URL.
+2. Drag the `website` folder onto [netlify.com](https://netlify.com) (or Vercel, or GitHub Pages), or connect the repo for auto-deploys.
+3. Make sure the backend's `FRONTEND_ORIGIN` env var includes this deployed site's URL (comma-separated if you have more than one, e.g. a preview URL + your real domain) so the browser's CORS check passes.
 
 ---
+
+## 5. Create your admin login
+
+Locally or via a one-off Render job:
+```bash
+cd server
+npm run seed:admin
+```
+This reads `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env` and creates (or updates) that admin account. Log in at `yourdomain.com/admin/login.html`.
+
+---
+
+## 6. Test before sharing publicly
+
+1. Use Stripe **test mode** and a test card (`4242 4242 4242 4242`, any future expiry/CVC) to make a full purchase.
+2. Confirm you land on `order-received.html` with the right product's intake form, submit it, and confirm the order shows up in `/admin/dashboard.html`.
+3. Confirm `commission-status.html` returns the right status for that order code + email.
+4. Only then switch Stripe to **live mode**, and re-point the Payment Link / webhook secret / secret key at your live Stripe keys.
+
+---
+
+## Environment variables reference
+
+See `server/.env.example` — every variable the backend needs, with comments on where each one comes from.
 
 ## Quick checklist
 
-- [ ] Stripe account created and verified
-- [ ] 5 Payment Links created, one per product
-- [ ] All STRIPE_LINK_* placeholders replaced in index.html
-- [ ] All ETSY_LINK_* and ETSY_SHOP_LINK placeholders replaced
-- [ ] All DOWNLOAD_LINK_* placeholders replaced in the thank-you pages
-- [ ] Product files uploaded somewhere (Drive/Dropbox/host) and links work
-- [ ] Site deployed (Netlify/Vercel/GitHub Pages)
-- [ ] Tested a full purchase in Stripe test mode
-- [ ] Switched to live mode and re-tested with real (small) purchase if desired
+- [ ] Stripe Payment Link redirects to `order-received.html?session_id={CHECKOUT_SESSION_ID}`
+- [ ] Stripe webhook configured for `checkout.session.completed`, pointed at `/api/webhooks/stripe`
+- [ ] Backend deployed with all required env vars set
+- [ ] `npm run migrate` run against the production database
+- [ ] `npm run seed:admin` run to create your admin login
+- [ ] `website/js/config.js` points at the deployed backend URL
+- [ ] Static site deployed, and its URL is in the backend's `FRONTEND_ORIGIN`
+- [ ] Full test-mode purchase walked through end to end
+- [ ] Switched to live Stripe keys and re-tested

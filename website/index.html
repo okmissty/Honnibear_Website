@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Honnibear — Sweet Printables for a More Organized Day</title>
-<meta name="description" content="Cute, honey-toned printable planners, trackers, and digital stickers by Honnibear.">
+<title>Honnibear — Custom Art Commissions & Website Gifts</title>
+<meta name="description" content="Custom hand-drawn portrait commissions and custom-built love letter & wedding websites by Honnibear.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -94,11 +94,12 @@
     opacity:0.55; filter:blur(2px);
   }
   .hero-cards{position:relative; display:grid; grid-template-columns:1fr 1fr; gap:16px; transform:rotate(-2deg);}
-  .hero-cards img{border-radius:18px; box-shadow:0 18px 40px rgba(136,63,32,0.22); border:4px solid var(--white);}
+  .icon-tile{
+    aspect-ratio:1/1; border-radius:18px; box-shadow:0 18px 40px rgba(136,63,32,0.22); border:4px solid var(--white);
+    display:flex; align-items:center; justify-content:center; font-size:3.4rem;
+    background:linear-gradient(135deg, var(--gold) 0%, var(--rust) 100%);
+  }
   .hero-cards .c2{transform:translateY(28px) rotate(3deg);}
-
-  /* decorative sunflower svg */
-  .flower{position:absolute; width:70px; opacity:0.9;}
 
   /* ---------- trust strip ---------- */
   .trust{background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
@@ -123,6 +124,9 @@
   .section-head h2{font-size:2.3rem; color:var(--rust); margin:0 0 10px;}
   .section-head p{opacity:0.85; margin:0;}
 
+  .subhead{font-family:'Fredoka'; font-weight:600; font-size:1.3rem; color:var(--rust); margin:44px 0 20px;}
+  .subhead:first-child{margin-top:0;}
+
   .product-grid{
     display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:28px;
   }
@@ -133,7 +137,10 @@
     transition:transform .18s ease, box-shadow .18s ease;
   }
   .card:hover{transform:translateY(-6px); box-shadow:0 18px 34px rgba(136,63,32,0.16);}
-  .card img{aspect-ratio:1/1; object-fit:cover; width:100%;}
+  .card-visual{
+    aspect-ratio:1/1; width:100%; display:flex; align-items:center; justify-content:center;
+    font-size:4rem; background:linear-gradient(135deg, var(--gold-dark) 0%, var(--rust) 100%);
+  }
   .card-body{padding:20px 20px 22px; display:flex; flex-direction:column; flex:1;}
   .card-body h3{margin:0 0 6px; font-size:1.2rem; color:var(--brown);}
   .card-body p.desc{font-size:0.92rem; line-height:1.5; opacity:0.85; margin:0 0 16px; flex:1;}
@@ -186,27 +193,28 @@
       <li><a class="navlink" href="#shop">Shop</a></li>
       <li><a class="navlink" href="#about">About</a></li>
       <li><a class="navlink" href="#how">How It Works</a></li>
+      <li><a class="navlink" href="commission-status.html">Order Status</a></li>
     </ul>
-    <a class="nav-cta" href="#shop">Shop Now</a>
+    <a class="nav-cta" href="#shop">Commission Now</a>
   </div>
 </nav>
 
 <header class="hero" id="top">
   <div class="wrap">
     <div>
-      <span class="eyebrow">🍯 New printables added monthly</span>
-      <h1>Sweet, cozy printables<br><span>for a more organized day.</span></h1>
-      <p class="lede">Honnibear makes cute, honey-toned planners, trackers, and digital stickers to help your week feel a little sweeter — every download instant, every design made with love.</p>
+      <span class="eyebrow">🎨 Custom-made, just for you</span>
+      <h1>Custom art & keepsake<br><span>websites, made with love.</span></h1>
+      <p class="lede">Honnibear creates hand-drawn portrait commissions and custom-built love letter & wedding websites — a one-of-a-kind gift for someone you love, or for yourself.</p>
       <div class="btn-row">
-        <a href="#shop" class="btn btn-primary">🌻 Shop the Collection</a>
+        <a href="#shop" class="btn btn-primary">🌻 See Commissions</a>
         <a href="#about" class="btn btn-secondary">Our Story</a>
       </div>
     </div>
     <div class="hero-art">
       <div class="sunburst"></div>
       <div class="hero-cards">
-        <img src="images/product-planner.jpg" alt="Printable planner set" class="c1">
-        <img src="images/product-stickers.jpg" alt="Digital sticker pack" class="c2">
+        <div class="icon-tile c1">🎨</div>
+        <div class="icon-tile c2">💌</div>
       </div>
     </div>
   </div>
@@ -214,10 +222,10 @@
 
 <div class="trust">
   <div class="wrap">
-    <div class="item">⚡ Instant Download</div>
+    <div class="item">✏️ Hand-Drawn, Made to Order</div>
     <div class="item">🐝 Small, Independent Shop</div>
-    <div class="item">🌻 Print at Home or Anywhere</div>
-    <div class="item">💛 Personal-Use Friendly</div>
+    <div class="item">💻 Custom-Built Websites</div>
+    <div class="item">💛 A Gift They'll Actually Remember</div>
   </div>
 </div>
 
@@ -228,7 +236,7 @@
     </div>
     <div>
       <h2>Hi, we're Honnibear 🐻</h2>
-      <p>Honnibear started with a simple idea: planning and getting organized should feel like a treat, not a chore. Every planner, tracker, and sticker sheet is designed in-house with a cozy honey-and-sunflower palette meant to make your to-do list a little more inviting.</p>
+      <p>Honnibear started with a simple idea: the best gifts are the ones made just for you. Every portrait commission is hand-drawn to order, and every website is custom-built around your own words, photos, and story — no templates pretending to be personal.</p>
       <p>We're a small, independent shop — every purchase directly supports one person's tiny creative business. Thank you for being here. 🐝</p>
     </div>
   </div>
@@ -239,71 +247,78 @@
     <div class="section-head">
       <span class="kicker">the collection</span>
       <h2>Shop Honnibear</h2>
-      <p>Instant-download PDFs, ready to print or use digitally. Buy directly here, or find every listing on our Etsy shop.</p>
+      <p>Buy directly here, or find every listing on our Etsy shop. After checkout you'll fill out a short form with your details — reference photos for art, or your letter/wedding info for a website.</p>
     </div>
 
+    <div class="subhead">🎨 Art Commissions</div>
     <div class="product-grid">
 
       <div class="card reveal">
-        <img src="images/product-planner.jpg" alt="Printable Planner Set">
+        <div class="card-visual">🖼️</div>
         <div class="card-body">
-          <h3>Printable Planner Set</h3>
-          <p class="desc">Weekly, daily, to-do, habit tracker, monthly goals & notes — six pages to plan your sweetest week.</p>
-          <div class="price-row"><span class="price">$5.50</span><span>6-page PDF</span></div>
+          <h3>Full Body Commission</h3>
+          <p class="desc">A fully custom, hand-drawn full-body portrait of your subject — you, a loved one, or a pet — in Honnibear's warm, honey-toned style.</p>
+          <div class="price-row"><span class="price">$60</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="STRIPE_LINK_PLANNER" data-product="planner">Buy Now</a>
-            <a class="etsy-btn" href="https://www.etsy.com/listing/4535461679/sunflower-printable-planner-set-weekly?ref=shop_home_feat_1&sr_prefetch=1&pf_from=shop_home&dd=1&logging_key=d6cd310df2d715f5fe7e197874ff4dfa35f76bb6%3A4535461679" target="_blank" rel="noopener">View on Etsy</a>
+            <a class="buy-btn" href="https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05?client_reference_id=full-body-commission" data-product="full-body-commission">Buy Now</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4448924264/custom-artwork-full-body-commissions" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
       </div>
 
       <div class="card reveal">
-        <img src="images/product-budget.jpg" alt="Budget Tracker Set">
+        <div class="card-visual">🖌️</div>
         <div class="card-body">
-          <h3>Budget Tracker Set</h3>
-          <p class="desc">Monthly budget, bills, debt payoff, savings, expenses & subscriptions — track every honey penny.</p>
-          <div class="price-row"><span class="price">$6.50</span><span>6-page PDF</span></div>
+          <h3>Half Body Commission</h3>
+          <p class="desc">A custom waist-up portrait, hand-drawn in the same cozy style — a beautiful piece with a little less detail (and a friendlier price) than a full body.</p>
+          <div class="price-row"><span class="price">$45</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="STRIPE_LINK_BUDGET" data-product="budget">Buy Now</a>
-            <a class="etsy-btn" href="https://www.etsy.com/listing/4535786432/budget-tracker-printable-set-monthly?ref=shop_home_feat_4&sr_prefetch=1&pf_from=shop_home&dd=1&logging_key=c8dd7809a276ca4d88441f3c9eaef43effdfe92f%3A4535786432" target="_blank" rel="noopener">View on Etsy</a>
+            <a class="buy-btn" href="https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05?client_reference_id=half-body-commission" data-product="half-body-commission">Buy Now</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4448920427/custom-artwork-half-body-commissions" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
       </div>
 
       <div class="card reveal">
-        <img src="images/product-meal.jpg" alt="Meal Planning & Grocery System">
+        <div class="card-visual">🧑‍🎨</div>
         <div class="card-body">
-          <h3>Meal Planning & Grocery System</h3>
-          <p class="desc">Weekly meals, grocery list, pantry inventory, recipe cards, meal prep & family favorites.</p>
-          <div class="price-row"><span class="price">$11.99</span><span>6-page PDF</span></div>
+          <h3>Headshot Commission</h3>
+          <p class="desc">A custom headshot/portrait focused on the face — the most affordable way to get a one-of-a-kind Honnibear piece of you or someone you love.</p>
+          <div class="price-row"><span class="price">$25</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="https://www.etsy.com/listing/4535951282/meal-planning-grocery-list-printable-set?sr_prefetch=1&pf_from=shop_home&ref=shop_home_active_3&dd=1&logging_key=ca44c656d5de1970aa8bf31d522560187f5e761c%3A4535951282" target="_blank" rel="noopener">View on Etsy</a>
+            <a class="buy-btn" href="https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05?client_reference_id=headshot-commission" data-product="headshot-commission">Buy Now</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4448917528/custom-artwork-headshotportrait" target="_blank" rel="noopener">View on Etsy</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="subhead">💻 Custom Websites</div>
+    <div class="product-grid">
+
+      <div class="card reveal">
+        <div class="card-visual">💌</div>
+        <div class="card-body">
+          <h3>Virtual Love Letter Website</h3>
+          <p class="desc">A private, custom-built one-page website written as a love letter — your own words and photos, wrapped in a cozy custom design you can send as a link instead of a card.</p>
+          <div class="price-row"><span class="price">$40</span><span>Custom website</span></div>
+          <div class="card-actions">
+            <a class="buy-btn" href="https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05?client_reference_id=love-letter-website" data-product="love-letter-website">Buy Now</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4542465413/custom-virtual-love-letter-website" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
       </div>
 
       <div class="card reveal">
-        <img src="images/product-fitness.jpg" alt="Fitness & Wellness Tracker">
+        <div class="card-visual">💍</div>
         <div class="card-body">
-          <h3>Fitness & Wellness Tracker</h3>
-          <p class="desc">Workout log, water & sleep tracker, self-care checklist, goals & mood tracker.</p>
-          <div class="price-row"><span class="price">$11.99</span><span>6-page PDF</span></div>
+          <h3>Wedding RSVP Website</h3>
+          <p class="desc">A custom wedding invitation & RSVP website — your details, schedule, and photos, with a built-in RSVP form, all in your wedding's own colors and style.</p>
+          <div class="price-row"><span class="price">$40</span><span>Custom website</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="STRIPE_LINK_FITNESS" data-product="fitness">Buy Now</a>
-            <a class="etsy-btn" href="ETSY_LINK_FITNESS" target="_blank" rel="noopener">View on Etsy</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="card reveal">
-        <img src="images/product-stickers.jpg" alt="Digital Sticker Pack">
-        <div class="card-body">
-          <h3>Digital Sticker Pack</h3>
-          <p class="desc">49 hand-illustrated bear & sunflower stickers, ready for GoodNotes, Notability & more.</p>
-          <div class="price-row"><span class="price">$5.00</span><span>49 PNG stickers</span></div>
-          <div class="card-actions">
-            <a class="buy-btn" href="STRIPE_LINK_STICKERS" data-product="stickers">Buy Now</a>
-            <a class="etsy-btn" href="https://www.etsy.com/listing/4535816006/bear-sunflower-digital-sticker-pack?sr_prefetch=1&pf_from=shop_home&ref=shop_home_active_5&dd=1&logging_key=6d284ea197ca04ff76039445fdba63e8c9b2c118%3A4535816006" target="_blank" rel="noopener">View on Etsy</a>
+            <a class="buy-btn" href="https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05?client_reference_id=wedding-rsvp-website" data-product="wedding-rsvp-website">Buy Now</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4540615745/custom-wedding-invitation-website" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
       </div>
@@ -321,18 +336,18 @@
     <div class="how-grid">
         <div class="how-step">
           <div class="num">1</div>
-          <h3>Choose your printable</h3>
-          <p>Pick a set above and tap Buy Now to check out securely through Stripe.</p>
+          <h3>Choose & purchase</h3>
+          <p>Pick a commission or custom website above and check out securely through Stripe.</p>
         </div>
         <div class="how-step">
           <div class="num">2</div>
-          <h3>Get your download</h3>
-          <p>After payment, you'll land on a page with your download link — no waiting, no shipping.</p>
+          <h3>Tell us the details</h3>
+          <p>Right after payment you'll fill out a quick form — reference photos for art, or your letter/wedding info for a website.</p>
         </div>
         <div class="how-step">
           <div class="num">3</div>
-          <h3>Print & enjoy</h3>
-          <p>Print at home, at a local shop, or use it digitally in your favorite planner app.</p>
+          <h3>Get your custom piece</h3>
+          <p>We create it by hand and email you the finished art or your live website link. Track your order status anytime.</p>
         </div>
     </div>
   </div>
@@ -342,27 +357,28 @@
   <div class="wrap">
     <div>
       <a href="#top" class="brand" style="font-size:1.5rem;">🐻 Honnibear</a>
-      <p style="max-width:32ch; opacity:0.75; font-size:0.92rem; margin-top:12px;">Sweet printables & digital goods for your everyday planning.</p>
+      <p style="max-width:32ch; opacity:0.75; font-size:0.92rem; margin-top:12px;">Custom art commissions & keepsake websites, made with love.</p>
     </div>
     <div class="footer-cols">
       <div>
         <h4>Shop</h4>
         <ul>
-          <li><a href="#shop">All Products</a></li>
-          <li><a href="ETSY_SHOP_LINK" target="_blank" rel="noopener">Etsy Shop</a></li>
+          <li><a href="#shop">All Commissions</a></li>
+          <li><a href="commission-status.html">Order Status</a></li>
+          <li><a href="https://www.etsy.com/shop/Honnibear" target="_blank" rel="noopener">Etsy Shop</a></li>
         </ul>
       </div>
       <div>
         <h4>Connect</h4>
         <ul>
           <li><a href="https://www.pinterest.com/honnibearr/" target="_blank" rel="noopener">Pinterest</a></li>
-          <li><a href="INSTAGRAM_LINK" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.instagram.com/honnibear_" target="_blank" rel="noopener">Instagram</a></li>
           <li><a href="mailto:Honnibearr@gmail.com">Email Us</a></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="footer-bottom">© 2026 Honnibear. All designs are for personal use only unless otherwise licensed.</div>
+  <div class="footer-bottom">© 2026 Honnibear. All artwork and designs are custom-made and © Honnibear.</div>
 </footer>
 
 <script>

@@ -1,0 +1,26 @@
+{
+  "name": "honnibear-server",
+  "version": "1.0.0",
+  "description": "Backend API for Honnibear: Stripe webhook intake, commission order tracking, and admin dashboard.",
+  "private": true,
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node src/db/migrate.js",
+    "seed:admin": "node src/db/seedAdmin.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^5.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.0",
+    "nodemailer": "^10.0.0",
+    "pg": "^8.12.0",
+    "stripe": "^16.8.0"
+  }
+}

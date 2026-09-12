@@ -1,0 +1,95 @@
+:root{
+  --cream:#FCEED5;
+  --cream-lt:#FFF8E9;
+  --gold:#FDB925;
+  --gold-dark:#F0A400;
+  --rust:#B2522D;
+  --brown:#883F20;
+  --line:#E8CFA0;
+  --white:#FFFFFF;
+  --max:760px;
+  --danger:#B23A2D;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Quicksand',sans-serif;
+  color:var(--brown);
+  background:var(--cream);
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Fredoka',sans-serif;}
+a{color:var(--rust);}
+img{max-width:100%;display:block;}
+
+.wrap{max-width:var(--max); margin:0 auto; padding:48px 24px;}
+
+nav.simple{background:rgba(252,238,213,0.92); border-bottom:1px solid var(--line); padding:14px 0;}
+nav.simple .wrap{max-width:1120px; padding:0 24px; display:flex; align-items:center; justify-content:space-between;}
+.brand{display:flex; align-items:center; gap:10px; font-family:'Fredoka'; font-weight:700; font-size:1.3rem; color:var(--rust); text-decoration:none;}
+.brand img{width:34px; height:34px;}
+
+.panel{
+  background:var(--white); border:1px solid var(--line); border-radius:20px;
+  padding:32px; box-shadow:0 10px 26px rgba(136,63,32,0.08);
+}
+
+h1.page-title{color:var(--rust); font-size:1.9rem; margin:0 0 8px;}
+p.subtitle{opacity:0.85; margin:0 0 28px; line-height:1.55;}
+
+label{display:block; font-weight:700; font-size:0.92rem; margin:18px 0 6px;}
+label:first-of-type{margin-top:0;}
+input[type=text], input[type=email], input[type=date], input[type=password], textarea, select{
+  width:100%; padding:12px 14px; border-radius:12px; border:1px solid var(--line);
+  font-family:inherit; font-size:0.98rem; background:var(--cream-lt); color:var(--brown);
+}
+textarea{min-height:110px; resize:vertical;}
+input[type=file]{width:100%; padding:10px 0; font-size:0.9rem;}
+.hint{font-size:0.82rem; opacity:0.7; margin-top:4px;}
+
+.btn{
+  display:inline-flex; align-items:center; gap:8px; justify-content:center;
+  padding:14px 26px; border-radius:999px; font-weight:700; text-decoration:none; font-size:1rem;
+  background:var(--rust); color:var(--white); border:none; cursor:pointer; width:100%; margin-top:22px;
+}
+.btn:hover{opacity:0.94;}
+.btn:disabled{opacity:0.6; cursor:not-allowed;}
+.btn-secondary{background:transparent; color:var(--rust); border:2px solid var(--gold-dark);}
+
+.message{border-radius:14px; padding:16px 18px; font-size:0.94rem; line-height:1.5; margin-bottom:20px;}
+.message.error{background:#FBE3DE; color:var(--danger); border:1px solid #E9B8AC;}
+.message.success{background:#EAF3E2; color:#4B6B2C; border:1px solid #C9DCB4;}
+.message.info{background:var(--cream-lt); border:1px solid var(--line);}
+
+.status-pill{
+  display:inline-block; padding:5px 14px; border-radius:999px; font-weight:700; font-size:0.8rem;
+  text-transform:capitalize;
+}
+.status-paid{background:#FFE9C2; color:#8A5A00;}
+.status-details_submitted{background:#D9E7FA; color:#1E4E8C;}
+.status-in_progress{background:#F0D8FA; color:#6C1E8C;}
+.status-delivered{background:#D8F5DE; color:#1E7A3A;}
+
+table.orders{width:100%; border-collapse:collapse; font-size:0.9rem;}
+table.orders th, table.orders td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--line);}
+table.orders tr{cursor:pointer;}
+table.orders tr:hover{background:var(--cream-lt);}
+
+.toolbar{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:20px; align-items:center;}
+.toolbar input, .toolbar select{width:auto; flex:1; min-width:160px;}
+
+.spinner-text{opacity:0.7; font-style:italic;}
+
+.thumb-grid{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;}
+.thumb-grid img{width:96px; height:96px; object-fit:cover; border-radius:10px; border:1px solid var(--line);}
+
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(136,63,32,0.45); display:flex; align-items:flex-start;
+  justify-content:center; padding:40px 16px; overflow-y:auto; z-index:100;
+}
+.modal{background:var(--white); border-radius:20px; padding:32px; max-width:640px; width:100%;}
+.modal-close{float:right; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--brown);}
+
+.kv{display:grid; grid-template-columns:140px 1fr; gap:6px 14px; font-size:0.92rem; margin:16px 0;}
+.kv dt{font-weight:700; opacity:0.75;}
+.kv dd{margin:0;}

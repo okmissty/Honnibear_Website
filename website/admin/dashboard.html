@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Dashboard — Honnibear Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/shared.css">
+<style>
+  .wrap.dash{max-width:1000px;}
+  .dash-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;}
+  .logout-btn{background:none; border:none; color:var(--rust); font-weight:700; cursor:pointer; text-decoration:underline;}
+  .pager{display:flex; gap:10px; align-items:center; margin-top:16px; font-size:0.9rem;}
+  .pager button{background:var(--white); border:1px solid var(--line); border-radius:8px; padding:6px 12px; cursor:pointer;}
+  .pager button:disabled{opacity:0.4; cursor:not-allowed;}
+</style>
+</head>
+<body>
+
+<nav class="simple">
+  <div class="wrap">
+    <a href="../index.html" class="brand"><img src="../images/logo.png" alt="Honnibear logo"> Honnibear Admin</a>
+    <button class="logout-btn" id="logout-btn">Log Out</button>
+  </div>
+</nav>
+
+<div class="wrap dash">
+  <div class="dash-header">
+    <h1 class="page-title" style="margin:0;">Commission Orders</h1>
+  </div>
+
+  <div class="panel">
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="Search by email or order code…">
+      <select id="status-filter">
+        <option value="">All statuses</option>
+        <option value="paid">Paid</option>
+        <option value="details_submitted">Details submitted</option>
+        <option value="in_progress">In progress</option>
+        <option value="delivered">Delivered</option>
+      </select>
+    </div>
+
+    <div id="messages"></div>
+    <div id="loading" class="spinner-text">Loading orders…</div>
+    <table class="orders" id="orders-table" style="display:none;">
+      <thead>
+        <tr><th>Order</th><th>Product</th><th>Customer</th><th>Amount</th><th>Status</th><th>Placed</th></tr>
+      </thead>
+      <tbody id="orders-body"></tbody>
+    </table>
+    <div class="pager" id="pager" style="display:none;">
+      <button id="prev-page">← Prev</button>
+      <span id="page-label"></span>
+      <button id="next-page">Next →</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-backdrop" style="display:none;">
+  <div class="modal">
+    <button class="modal-close" id="modal-close">&times;</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/formFields.js"></script>
+<script>
+(function(){
+  const token = localStorage.getItem('honnibear_admin_token');
+  if (!token) { window.location.href = 'login.html'; return; }
+
+  const API = window.HONNIBEAR_API_BASE;
+  let page = 1;
+  let totalPages = 1;
+
+  document.getElementById('logout-btn').addEventListener('click', function(){
+    localStorage.removeItem('honnibear_admin_token');
+    window.location.href = 'login.html';
+  });
+
+  function authedFetch(path, options){
+    options = options || {};
+    options.headers = Object.assign({}, options.headers, { Authorization: 'Bearer ' + token });
+    return fetch(API + path, options).then(function(res){
+      if (res.status === 401) {
+        localStorage.removeItem('honnibear_admin_token');
+        window.location.href = 'login.html';
+        throw new Error('Session expired.');
+      }
+      return res.json().then(function(body){ return { ok: res.ok, body: body }; });
+    });
+  }
+
+  function loadOrders(){
+    const messagesEl = document.getElementById('messages');
+    const loadingEl = document.getElementById('loading');
+    const tableEl = document.getElementById('orders-table');
+    const pagerEl = document.getElementById('pager');
+    const bodyEl = document.getElementById('orders-body');
+
+    loadingEl.style.display = 'block';
+    tableEl.style.display = 'none';
+    messagesEl.innerHTML = '';
+
+    const q = document.getElementById('search').value.trim();
+    const status = document.getElementById('status-filter').value;
+    const query = new URLSearchParams({ page: page, pageSize: 20 });
+    if (q) query.set('q', q);
+    if (status) query.set('status', status);
+
+    authedFetch('/api/admin/orders?' + query.toString())
+      .then(function(result){
+        loadingEl.style.display = 'none';
+        if (!result.ok) { messagesEl.innerHTML = '<div class="message error">' + result.body.error + '</div>'; return; }
+
+        const { orders, total, pageSize } = result.body;
+        totalPages = Math.max(1, Math.ceil(total / pageSize));
+        tableEl.style.display = orders.length ? 'table' : 'none';
+        if (!orders.length) messagesEl.innerHTML = '<div class="message info">No orders match yet.</div>';
+
+        bodyEl.innerHTML = orders.map(function(o){
+          return '<tr data-id="' + o.id + '">' +
+            '<td>' + o.order_code + '</td>' +
+            '<td>' + o.product_name + '</td>' +
+            '<td>' + (o.customer_email || '—') + '</td>' +
+            '<td>$' + ((o.amount_cents || 0) / 100).toFixed(2) + '</td>' +
+            '<td><span class="status-pill status-' + o.status + '">' + o.status.replace('_',' ') + '</span></td>' +
+            '<td>' + new Date(o.created_at).toLocaleDateString() + '</td>' +
+          '</tr>';
+        }).join('');
+
+        Array.from(bodyEl.querySelectorAll('tr')).forEach(function(row){
+          row.addEventListener('click', function(){ openOrder(row.getAttribute('data-id')); });
+        });
+
+        pagerEl.style.display = 'flex';
+        document.getElementById('page-label').textContent = 'Page ' + page + ' of ' + totalPages;
+        document.getElementById('prev-page').disabled = page <= 1;
+        document.getElementById('next-page').disabled = page >= totalPages;
+      })
+      .catch(function(err){
+        loadingEl.style.display = 'none';
+        if (err.message !== 'Session expired.') {
+          messagesEl.innerHTML = '<div class="message error">Could not load orders. Please try again.</div>';
+        }
+      });
+  }
+
+  function openOrder(id){
+    authedFetch('/api/admin/orders/' + id).then(function(result){
+      if (!result.ok) { alert(result.body.error); return; }
+      renderModal(result.body);
+    });
+  }
+
+  function renderModal(data){
+    const order = data.order;
+    const fields = window.HonnibearFields.fieldsForSlug(order.product_slug);
+    const detailValues = (data.details && data.details.details) || {};
+
+    let html = '<h2 style="color:var(--rust); margin-top:0;">' + order.product_name + '</h2>';
+    html += '<div class="kv">' +
+      '<dt>Order</dt><dd>' + order.order_code + '</dd>' +
+      '<dt>Customer</dt><dd>' + (order.customer_email || '—') + '</dd>' +
+      '<dt>Amount</dt><dd>$' + ((order.amount_cents || 0) / 100).toFixed(2) + '</dd>' +
+      '<dt>Placed</dt><dd>' + new Date(order.created_at).toLocaleString() + '</dd>' +
+    '</div>';
+
+    html += '<label for="status-select">Status</label>';
+    html += '<select id="status-select">' +
+      ['paid','details_submitted','in_progress','delivered'].map(function(s){
+        return '<option value="' + s + '"' + (s === order.status ? ' selected' : '') + '>' + s.replace('_',' ') + '</option>';
+      }).join('') +
+    '</select>';
+    html += '<button class="btn" id="save-status-btn">Update Status</button>';
+
+    if (data.details) {
+      html += '<h3 style="margin-top:26px;">Commission Details</h3><div class="kv">';
+      fields.forEach(function(f){
+        html += '<dt>' + f.label + '</dt><dd>' + (detailValues[f.name] ? String(detailValues[f.name]).replace(/</g,'&lt;') : '<em>—</em>') + '</dd>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="message info" style="margin-top:22px;">Customer hasn\'t submitted their details yet.</div>';
+    }
+
+    if (data.files && data.files.length) {
+      html += '<h3>Reference Photos</h3><div class="thumb-grid" id="thumb-grid"></div>';
+    }
+
+    document.getElementById('modal-content').innerHTML = html;
+    document.getElementById('modal-backdrop').style.display = 'flex';
+
+    document.getElementById('save-status-btn').addEventListener('click', function(){
+      const newStatus = document.getElementById('status-select').value;
+      authedFetch('/api/admin/orders/' + order.id + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      }).then(function(result){
+        if (!result.ok) { alert(result.body.error); return; }
+        closeModal();
+        loadOrders();
+      });
+    });
+
+    if (data.files && data.files.length) {
+      const grid = document.getElementById('thumb-grid');
+      data.files.forEach(function(file){
+        fetch(API + file.url, { headers: { Authorization: 'Bearer ' + token } })
+          .then(function(res){ return res.blob(); })
+          .then(function(blob){
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(blob);
+            img.title = file.original_name;
+            grid.appendChild(img);
+          });
+      });
+    }
+  }
+
+  function closeModal(){ document.getElementById('modal-backdrop').style.display = 'none'; }
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal-backdrop').addEventListener('click', function(e){
+    if (e.target === this) closeModal();
+  });
+
+  document.getElementById('prev-page').addEventListener('click', function(){ if (page > 1) { page--; loadOrders(); } });
+  document.getElementById('next-page').addEventListener('click', function(){ if (page < totalPages) { page++; loadOrders(); } });
+
+  let searchTimer;
+  document.getElementById('search').addEventListener('input', function(){
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function(){ page = 1; loadOrders(); }, 350);
+  });
+  document.getElementById('status-filter').addEventListener('change', function(){ page = 1; loadOrders(); });
+
+  loadOrders();
+})();
+</script>
+
+</body>
+</html>

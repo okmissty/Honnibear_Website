@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Honnibear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/shared.css">
+</head>
+<body>
+
+<div class="wrap" style="max-width:420px; padding-top:90px;">
+  <div class="panel">
+    <h1 class="page-title" style="font-size:1.5rem;">🐻 Honnibear Admin</h1>
+    <p class="subtitle">Sign in to manage commission orders.</p>
+
+    <div id="messages"></div>
+
+    <form id="login-form">
+      <label for="email">Email</label>
+      <input type="email" id="email" required autocomplete="username">
+
+      <label for="password">Password</label>
+      <input type="password" id="password" required autocomplete="current-password">
+
+      <button type="submit" class="btn" id="submit-btn">Log In</button>
+    </form>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script>
+(function(){
+  if (localStorage.getItem('honnibear_admin_token')) {
+    window.location.href = 'dashboard.html';
+  }
+
+  const form = document.getElementById('login-form');
+  const messagesEl = document.getElementById('messages');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Signing in…';
+    messagesEl.innerHTML = '';
+
+    fetch(window.HONNIBEAR_API_BASE + '/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value,
+      }),
+    })
+      .then(function(res){ return res.json().then(function(body){ return { ok: res.ok, body: body }; }); })
+      .then(function(result){
+        if (!result.ok) throw new Error(result.body.error || 'Login failed.');
+        localStorage.setItem('honnibear_admin_token', result.body.token);
+        window.location.href = 'dashboard.html';
+      })
+      .catch(function(err){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log In';
+        messagesEl.innerHTML = '<div class="message error">' + err.message + '</div>';
+      });
+  });
+})();
+</script>
+
+</body>
+</html>

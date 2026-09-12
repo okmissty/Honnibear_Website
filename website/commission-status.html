@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check Order Status — Honnibear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/shared.css">
+</head>
+<body>
+
+<nav class="simple">
+  <div class="wrap">
+    <a href="index.html" class="brand"><img src="images/logo.png" alt="Honnibear logo"> Honnibear</a>
+  </div>
+</nav>
+
+<div class="wrap" style="max-width:560px;">
+  <div class="panel">
+    <h1 class="page-title">Check Your Order Status</h1>
+    <p class="subtitle">Enter your order code (from your confirmation email, looks like <strong>HB-XXXXXX</strong>) and the email you paid with.</p>
+
+    <div id="messages"></div>
+
+    <form id="lookup-form">
+      <label for="code">Order code</label>
+      <input type="text" id="code" placeholder="HB-7K3QF9" required>
+
+      <label for="email">Email used at checkout</label>
+      <input type="email" id="email" required>
+
+      <button type="submit" class="btn" id="submit-btn">Check Status</button>
+    </form>
+
+    <div id="result" style="display:none; margin-top:24px;"></div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>
+(function(){
+  const form = document.getElementById('lookup-form');
+  const messagesEl = document.getElementById('messages');
+  const resultEl = document.getElementById('result');
+
+  const STATUS_COPY = {
+    paid: "We've received your payment, but not your details yet — check your email for the link to fill those in.",
+    details_submitted: "We've got your details and your order is in our queue!",
+    in_progress: "We're working on it right now!",
+    delivered: "Delivered! Check your email for the final piece.",
+  };
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const submitBtn = document.getElementById('submit-btn');
+    const code = document.getElementById('code').value.trim();
+    const email = document.getElementById('email').value.trim();
+    messagesEl.innerHTML = '';
+    resultEl.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Checking…';
+
+    const url = window.HONNIBEAR_API_BASE + '/api/orders/lookup?code=' + encodeURIComponent(code) + '&email=' + encodeURIComponent(email);
+    fetch(url)
+      .then(function(res){ return res.json().then(function(body){ return { ok: res.ok, body: body }; }); })
+      .then(function(result){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Check Status';
+        if (!result.ok) {
+          messagesEl.innerHTML = '<div class="message error">' + result.body.error + '</div>';
+          return;
+        }
+        const o = result.body;
+        resultEl.style.display = 'block';
+        resultEl.innerHTML =
+          '<div class="kv">' +
+            '<dt>Order</dt><dd>' + o.order_code + '</dd>' +
+            '<dt>Product</dt><dd>' + o.product_name + '</dd>' +
+            '<dt>Status</dt><dd><span class="status-pill status-' + o.status + '">' + o.status.replace('_',' ') + '</span></dd>' +
+            '<dt>Placed</dt><dd>' + new Date(o.created_at).toLocaleDateString() + '</dd>' +
+            '<dt>Updated</dt><dd>' + new Date(o.updated_at).toLocaleDateString() + '</dd>' +
+          '</div>' +
+          '<div class="message info">' + (STATUS_COPY[o.status] || '') + '</div>';
+      })
+      .catch(function(){
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Check Status';
+        messagesEl.innerHTML = '<div class="message error">Could not reach the Honnibear server. Please try again in a moment.</div>';
+      });
+  });
+})();
+</script>
+
+</body>
+</html>
