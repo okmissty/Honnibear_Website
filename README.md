@@ -2,7 +2,7 @@
 
 The brand website for **Honnibear** — cute, honey-toned printable planners, trackers, digital stickers, and custom art commissions.
 
-**Live site:** _add your deployed URL here once live_
+**Live site:** https://honnibear.netlify.app/
 **Etsy shop:** https://www.etsy.com/shop/Honnibear
 
 ---
