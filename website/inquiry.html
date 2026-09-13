@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send an Inquiry | Honnibear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/shared.css">
+<style>
+  /* Honeypot: present in the DOM for bots to find, invisible and unreachable for people. */
+  .hp-field{position:absolute; left:-9999px; top:-9999px; height:0; width:0; overflow:hidden;}
+</style>
+</head>
+<body>
+
+<nav class="simple">
+  <div class="wrap">
+    <a href="index.html" class="brand"><img src="images/logo.png" alt="Honnibear logo"> Honnibear</a>
+    <a href="commission-status.html" style="font-weight:700; font-size:0.92rem; text-decoration:none;">Check Order Status</a>
+  </div>
+</nav>
+
+<div class="wrap" style="max-width:640px;">
+  <div class="panel">
+    <h1 class="page-title">Send an Inquiry</h1>
+    <p class="subtitle">Tell me what you're picturing. No payment is required yet: I review every inquiry myself and typically respond within 24 hours to confirm or follow up. If I take it on, I'll send you a secure payment link.</p>
+
+    <div id="messages"></div>
+
+    <form id="inquiry-form">
+      <label for="product">Which commission is this for?</label>
+      <select id="product" name="product" required></select>
+
+      <label for="name">Your name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="email">Your email</label>
+      <input type="email" id="email" name="email" required>
+
+      <div id="dynamic-fields"></div>
+
+      <label for="photos" id="photos-label">Reference photos</label>
+      <input type="file" id="photos" name="photos" accept="image/png,image/jpeg,image/webp" multiple>
+      <div class="hint" id="photos-hint">JPEG, PNG, or WEBP. Up to 6 photos, 8MB each.</div>
+
+      <div class="hp-field" aria-hidden="true">
+        <label for="company">Company</label>
+        <input type="text" id="company" name="company" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button type="submit" class="btn" id="submit-btn">Send Inquiry</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/formFields.js"></script>
+<script>
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const requestedSlug = params.get('product');
+  const form = document.getElementById('inquiry-form');
+  const productSelect = document.getElementById('product');
+  const dynamicFieldsEl = document.getElementById('dynamic-fields');
+  const photosLabel = document.getElementById('photos-label');
+  const photosHint = document.getElementById('photos-hint');
+  const messagesEl = document.getElementById('messages');
+
+  Object.keys(window.HonnibearFields.PRODUCTS).forEach(function(slug){
+    const opt = document.createElement('option');
+    opt.value = slug;
+    opt.textContent = window.HonnibearFields.PRODUCTS[slug].name;
+    if (slug === requestedSlug) opt.selected = true;
+    productSelect.appendChild(opt);
+  });
+
+  function renderFieldsFor(slug){
+    const product = window.HonnibearFields.productForSlug(slug);
+    const fields = product.fields;
+    const isArt = product.type === 'art';
+
+    let html = '';
+    fields.forEach(function(f){
+      html += '<label for="' + f.name + '">' + f.label + (f.required ? ' *' : '') + '</label>';
+      if (f.type === 'textarea') {
+        html += '<textarea id="' + f.name + '" name="' + f.name + '"' + (f.required ? ' required' : '') + '></textarea>';
+      } else {
+        html += '<input type="' + f.type + '" id="' + f.name + '" name="' + f.name + '"' + (f.required ? ' required' : '') + '>';
+      }
+    });
+    dynamicFieldsEl.innerHTML = html;
+
+    photosLabel.textContent = 'Reference photos' + (isArt ? '' : ' (optional)');
+    photosHint.textContent = 'JPEG, PNG, or WEBP. Up to 6 photos, 8MB each.' + (isArt ? ' At least one clear reference photo is strongly recommended.' : '');
+  }
+
+  renderFieldsFor(productSelect.value);
+  productSelect.addEventListener('change', function(){ renderFieldsFor(productSelect.value); });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    messagesEl.innerHTML = '';
+
+    const slug = productSelect.value;
+    const fields = window.HonnibearFields.fieldsForSlug(slug);
+    const details = {};
+    fields.forEach(function(f){ details[f.name] = document.getElementById(f.name).value; });
+
+    const formData = new FormData();
+    formData.append('name', document.getElementById('name').value);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('product', slug);
+    formData.append('details', JSON.stringify(details));
+    formData.append('company', document.getElementById('company').value);
+    const photoInput = document.getElementById('photos');
+    Array.from(photoInput.files || []).forEach(function(file){ formData.append('photos', file); });
+
+    fetch(window.HONNIBEAR_API_BASE + '/api/inquiries', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(function(res){ return res.json().then(function(body){ return { ok: res.ok, body: body }; }); })
+      .then(function(result){
+        if (!result.ok) throw new Error(result.body.error || 'Something went wrong.');
+        form.style.display = 'none';
+        document.querySelector('.page-title').textContent = 'Inquiry sent!';
+        document.querySelector('.subtitle').textContent = '';
+        messagesEl.innerHTML = '<div class="message success">Thanks! I typically respond within 24 hours to confirm or follow up. Your reference code is <strong>' + result.body.orderCode + '</strong>, save it to check your status any time on the <a href="commission-status.html">Order Status page</a>.</div>';
+      })
+      .catch(function(err){
+        messagesEl.innerHTML = '<div class="message error">' + err.message + '</div>';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Inquiry';
+      });
+  });
+})();
+</script>
+
+</body>
+</html>

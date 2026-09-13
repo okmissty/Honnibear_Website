@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Honnibear — Sweet Printables for a More Organized Day</title>
-<meta name="description" content="Cute, honey-toned printable planners, trackers, and digital stickers by Honnibear.">
+<title>Honnibear | Custom Art Commissions & Website Gifts</title>
+<meta name="description" content="Custom hand-drawn portrait commissions and custom-built love letter and wedding websites by MissTy at Honnibear.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -45,7 +45,7 @@
     backdrop-filter:blur(6px);
     border-bottom:1px solid var(--line);
   }
-  nav .wrap{display:flex; align-items:center; justify-content:space-between; padding-top:14px; padding-bottom:14px;}
+  nav .wrap{position:relative; display:flex; align-items:center; justify-content:space-between; padding-top:14px; padding-bottom:14px; gap:16px;}
   .brand{display:flex; align-items:center; gap:10px; font-family:'Fredoka'; font-weight:700; font-size:1.4rem; color:var(--rust); text-decoration:none;}
   .brand img{width:38px; height:38px;}
   nav ul{list-style:none; display:flex; gap:28px; margin:0; padding:0;}
@@ -55,10 +55,21 @@
     background:var(--rust); color:var(--white)!important; padding:10px 20px; border-radius:999px;
     font-weight:700; text-decoration:none; font-size:0.92rem; white-space:nowrap;
   }
-  .nav-mobile-toggle{display:none;}
+  .nav-mobile-toggle{
+    display:none; background:var(--white); border:1px solid var(--line); border-radius:999px;
+    padding:8px 16px; font-weight:700; font-size:0.85rem; color:var(--rust); cursor:pointer;
+  }
   @media (max-width:780px){
-    nav ul.navlinks{display:none;}
-    .nav-mobile-toggle{display:block; background:none; border:none; font-size:1.6rem; color:var(--rust); cursor:pointer;}
+    nav ul.navlinks{
+      display:none; position:absolute; top:100%; left:24px; right:24px; margin-top:10px;
+      background:var(--white); border:1px solid var(--line); border-radius:16px;
+      flex-direction:column; gap:4px; padding:12px; box-shadow:0 12px 28px rgba(136,63,32,0.14);
+    }
+    nav ul.navlinks.open{display:flex;}
+    nav a.navlink{padding:10px 12px; border-radius:10px;}
+    nav a.navlink:hover{background:var(--cream-lt); border-color:transparent;}
+    .nav-mobile-toggle{display:inline-block;}
+    .nav-cta{display:none;}
   }
 
   /* ---------- hero ---------- */
@@ -94,16 +105,19 @@
     opacity:0.55; filter:blur(2px);
   }
   .hero-cards{position:relative; display:grid; grid-template-columns:1fr 1fr; gap:16px; transform:rotate(-2deg);}
-  .hero-cards img{border-radius:18px; box-shadow:0 18px 40px rgba(136,63,32,0.22); border:4px solid var(--white);}
-  .hero-cards .c2{transform:translateY(28px) rotate(3deg);}
-
-  /* decorative sunflower svg */
-  .flower{position:absolute; width:70px; opacity:0.9;}
+  .hero-tile{
+    aspect-ratio:1/1; border-radius:18px; box-shadow:0 18px 40px rgba(136,63,32,0.22); border:4px solid var(--white);
+    display:flex; align-items:center; justify-content:center; padding:18px; text-align:center;
+    background:var(--white);
+  }
+  .hero-tile img{width:70%;}
+  .hero-tile .script{font-size:1.6rem; line-height:1.25; color:var(--rust);}
+  .hero-cards .c2{transform:translateY(28px) rotate(3deg); background:var(--cream-lt);}
 
   /* ---------- trust strip ---------- */
   .trust{background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
   .trust .wrap{display:flex; justify-content:space-around; flex-wrap:wrap; gap:22px; padding:26px 24px; text-align:center;}
-  .trust .item{font-weight:700; color:var(--rust); font-size:0.95rem; display:flex; align-items:center; gap:8px;}
+  .trust .item{font-weight:700; color:var(--rust); font-size:0.95rem;}
 
   /* ---------- about ---------- */
   .about .wrap{display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:center;}
@@ -123,18 +137,20 @@
   .section-head h2{font-size:2.3rem; color:var(--rust); margin:0 0 10px;}
   .section-head p{opacity:0.85; margin:0;}
 
+  .subhead{font-family:'Fredoka'; font-weight:600; font-size:1.3rem; color:var(--rust); margin:44px 0 20px;}
+  .subhead:first-child{margin-top:0;}
+
   .product-grid{
     display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:28px;
   }
   .card{
-    background:var(--white); border-radius:22px; overflow:hidden; border:1px solid var(--line);
+    background:var(--white); border-radius:18px; border:1px solid var(--line); border-top:4px solid var(--gold-dark);
     box-shadow:0 10px 26px rgba(136,63,32,0.08);
     display:flex; flex-direction:column;
     transition:transform .18s ease, box-shadow .18s ease;
   }
   .card:hover{transform:translateY(-6px); box-shadow:0 18px 34px rgba(136,63,32,0.16);}
-  .card img{aspect-ratio:1/1; object-fit:cover; width:100%;}
-  .card-body{padding:20px 20px 22px; display:flex; flex-direction:column; flex:1;}
+  .card-body{padding:24px 22px; display:flex; flex-direction:column; flex:1;}
   .card-body h3{margin:0 0 6px; font-size:1.2rem; color:var(--brown);}
   .card-body p.desc{font-size:0.92rem; line-height:1.5; opacity:0.85; margin:0 0 16px; flex:1;}
   .price-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
@@ -151,9 +167,20 @@
     border:2px solid var(--gold-dark);
   }
 
+  /* ---------- commission info ---------- */
+  .info-grid{display:grid; grid-template-columns:1fr 1fr; gap:28px;}
+  @media (max-width:780px){ .info-grid{grid-template-columns:1fr;} }
+  .info-card{background:var(--white); border:1px solid var(--line); border-radius:20px; padding:32px;}
+  .info-card h3{margin:0 0 16px; color:var(--rust); font-size:1.15rem;}
+  .info-card ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:14px;}
+  .info-card li{font-size:0.95rem; line-height:1.55; padding-left:22px; position:relative;}
+  .info-card li::before{content:""; position:absolute; left:0; top:0.55em; width:7px; height:7px; border-radius:50%; background:var(--gold-dark);}
+  .info-note{margin-top:24px; font-size:0.9rem; opacity:0.75; text-align:center;}
+
   /* ---------- how it works ---------- */
-  .how-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
-  @media (max-width:780px){ .how-grid{grid-template-columns:1fr!important;} }
+  .how-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px;}
+  @media (max-width:960px){ .how-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .how-grid{grid-template-columns:1fr!important;} }
   .how-step{background:var(--white); border:1px solid var(--line); border-radius:20px; padding:28px; text-align:center;}
   .how-step .num{
     width:44px; height:44px; border-radius:50%; background:var(--gold); color:var(--brown); font-family:'Fredoka'; font-weight:700;
@@ -182,31 +209,34 @@
 <nav>
   <div class="wrap">
     <a href="#top" class="brand"><img src="images/logo.png" alt="Honnibear logo"> Honnibear</a>
-    <ul class="navlinks">
+    <ul class="navlinks" id="navlinks">
       <li><a class="navlink" href="#shop">Shop</a></li>
+      <li><a class="navlink" href="gallery.html">Gallery</a></li>
       <li><a class="navlink" href="#about">About</a></li>
-      <li><a class="navlink" href="#how">How It Works</a></li>
+      <li><a class="navlink" href="#info">Commission Info</a></li>
+      <li><a class="navlink" href="commission-status.html">Order Status</a></li>
     </ul>
-    <a class="nav-cta" href="#shop">Shop Now</a>
+    <button class="nav-mobile-toggle" id="nav-toggle" aria-expanded="false" aria-controls="navlinks">Menu</button>
+    <a class="nav-cta" href="#shop">Commission Now</a>
   </div>
 </nav>
 
 <header class="hero" id="top">
   <div class="wrap">
     <div>
-      <span class="eyebrow">🍯 New printables added monthly</span>
-      <h1>Sweet, cozy printables<br><span>for a more organized day.</span></h1>
-      <p class="lede">Honnibear makes cute, honey-toned planners, trackers, and digital stickers to help your week feel a little sweeter — every download instant, every design made with love.</p>
+      <span class="eyebrow">Custom-made, just for you</span>
+      <h1>Custom art & keepsake<br><span>websites, made by hand.</span></h1>
+      <p class="lede">I'm MissTy, and I create hand-drawn portrait commissions and custom-built love letter and wedding websites: a one-of-a-kind gift for someone you love, or for yourself.</p>
       <div class="btn-row">
-        <a href="#shop" class="btn btn-primary">🌻 Shop the Collection</a>
-        <a href="#about" class="btn btn-secondary">Our Story</a>
+        <a href="#shop" class="btn btn-primary">See Commissions</a>
+        <a href="#about" class="btn btn-secondary">My Story</a>
       </div>
     </div>
     <div class="hero-art">
       <div class="sunburst"></div>
       <div class="hero-cards">
-        <img src="images/product-planner.jpg" alt="Printable planner set" class="c1">
-        <img src="images/product-stickers.jpg" alt="Digital sticker pack" class="c2">
+        <div class="hero-tile c1"><img src="images/logo.png" alt="Honnibear logo"></div>
+        <div class="hero-tile c2"><span class="script">hand-drawn,<br>one at a time</span></div>
       </div>
     </div>
   </div>
@@ -214,10 +244,10 @@
 
 <div class="trust">
   <div class="wrap">
-    <div class="item">⚡ Instant Download</div>
-    <div class="item">🐝 Small, Independent Shop</div>
-    <div class="item">🌻 Print at Home or Anywhere</div>
-    <div class="item">💛 Personal-Use Friendly</div>
+    <div class="item">Hand-Drawn, Made to Order</div>
+    <div class="item">One Independent Artist</div>
+    <div class="item">Custom-Built Websites</div>
+    <div class="item">A Gift They'll Actually Remember</div>
   </div>
 </div>
 
@@ -227,9 +257,9 @@
       <span class="script">"a little honey<br>for your day"</span>
     </div>
     <div>
-      <h2>Hi, we're Honnibear 🐻</h2>
-      <p>Honnibear started with a simple idea: planning and getting organized should feel like a treat, not a chore. Every planner, tracker, and sticker sheet is designed in-house with a cozy honey-and-sunflower palette meant to make your to-do list a little more inviting.</p>
-      <p>We're a small, independent shop — every purchase directly supports one person's tiny creative business. Thank you for being here. 🐝</p>
+      <h2>Hi, I'm MissTy</h2>
+      <p>I started Honnibear with a simple idea: the best gifts are the ones made just for you. Every portrait commission is hand-drawn to order, and every website is custom-built around your own words, photos, and story, not a template pretending to be personal.</p>
+      <p>I'm a one-person shop, so every purchase goes directly toward my small creative business. Thank you for being here.</p>
     </div>
   </div>
 </section>
@@ -239,76 +269,110 @@
     <div class="section-head">
       <span class="kicker">the collection</span>
       <h2>Shop Honnibear</h2>
-      <p>Instant-download PDFs, ready to print or use digitally. Buy directly here, or find every listing on our Etsy shop.</p>
+      <p>Send an inquiry directly here, or find every listing on my Etsy shop. I review every inquiry myself and typically respond within 24 hours; if I take it on, you'll get a secure payment link to lock in your spot.</p>
     </div>
 
+    <div class="subhead">Art Commissions</div>
     <div class="product-grid">
 
       <div class="card reveal">
-        <img src="images/product-planner.jpg" alt="Printable Planner Set">
         <div class="card-body">
-          <h3>Printable Planner Set</h3>
-          <p class="desc">Weekly, daily, to-do, habit tracker, monthly goals & notes — six pages to plan your sweetest week.</p>
-          <div class="price-row"><span class="price">$5.50</span><span>6-page PDF</span></div>
+          <h3>Full Body Commission</h3>
+          <p class="desc">A fully custom, hand-drawn full-body portrait of your subject: you, a loved one, or a pet, in my warm, honey-toned style.</p>
+          <div class="price-row"><span class="price">$60</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="STRIPE_LINK_PLANNER" data-product="planner">Buy Now</a>
-            <a class="etsy-btn" href="https://www.etsy.com/listing/4535461679/sunflower-printable-planner-set-weekly?ref=shop_home_feat_1&sr_prefetch=1&pf_from=shop_home&dd=1&logging_key=d6cd310df2d715f5fe7e197874ff4dfa35f76bb6%3A4535461679" target="_blank" rel="noopener">View on Etsy</a>
+            <a class="buy-btn" href="inquiry.html?product=full-body-commission">Send Inquiry</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4448924264/custom-artwork-full-body-commissions" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
       </div>
 
       <div class="card reveal">
-        <img src="images/product-budget.jpg" alt="Budget Tracker Set">
         <div class="card-body">
-          <h3>Budget Tracker Set</h3>
-          <p class="desc">Monthly budget, bills, debt payoff, savings, expenses & subscriptions — track every honey penny.</p>
-          <div class="price-row"><span class="price">$6.50</span><span>6-page PDF</span></div>
+          <h3>Half Body Commission</h3>
+          <p class="desc">A custom waist-up portrait, hand-drawn in the same cozy style: a beautiful piece with a little less detail, and a friendlier price, than a full body.</p>
+          <div class="price-row"><span class="price">$45</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="STRIPE_LINK_BUDGET" data-product="budget">Buy Now</a>
-            <a class="etsy-btn" href="https://www.etsy.com/listing/4535786432/budget-tracker-printable-set-monthly?ref=shop_home_feat_4&sr_prefetch=1&pf_from=shop_home&dd=1&logging_key=c8dd7809a276ca4d88441f3c9eaef43effdfe92f%3A4535786432" target="_blank" rel="noopener">View on Etsy</a>
+            <a class="buy-btn" href="inquiry.html?product=half-body-commission">Send Inquiry</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4448920427/custom-artwork-half-body-commissions" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
       </div>
 
       <div class="card reveal">
-        <img src="images/product-meal.jpg" alt="Meal Planning & Grocery System">
         <div class="card-body">
-          <h3>Meal Planning & Grocery System</h3>
-          <p class="desc">Weekly meals, grocery list, pantry inventory, recipe cards, meal prep & family favorites.</p>
-          <div class="price-row"><span class="price">$11.99</span><span>6-page PDF</span></div>
+          <h3>Headshot Commission</h3>
+          <p class="desc">A custom headshot or portrait focused on the face, the most affordable way to get a one-of-a-kind piece of you or someone you love.</p>
+          <div class="price-row"><span class="price">$25</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="https://www.etsy.com/listing/4535951282/meal-planning-grocery-list-printable-set?sr_prefetch=1&pf_from=shop_home&ref=shop_home_active_3&dd=1&logging_key=ca44c656d5de1970aa8bf31d522560187f5e761c%3A4535951282" target="_blank" rel="noopener">View on Etsy</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="card reveal">
-        <img src="images/product-fitness.jpg" alt="Fitness & Wellness Tracker">
-        <div class="card-body">
-          <h3>Fitness & Wellness Tracker</h3>
-          <p class="desc">Workout log, water & sleep tracker, self-care checklist, goals & mood tracker.</p>
-          <div class="price-row"><span class="price">$11.99</span><span>6-page PDF</span></div>
-          <div class="card-actions">
-            <a class="buy-btn" href="STRIPE_LINK_FITNESS" data-product="fitness">Buy Now</a>
-            <a class="etsy-btn" href="ETSY_LINK_FITNESS" target="_blank" rel="noopener">View on Etsy</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="card reveal">
-        <img src="images/product-stickers.jpg" alt="Digital Sticker Pack">
-        <div class="card-body">
-          <h3>Digital Sticker Pack</h3>
-          <p class="desc">49 hand-illustrated bear & sunflower stickers, ready for GoodNotes, Notability & more.</p>
-          <div class="price-row"><span class="price">$5.00</span><span>49 PNG stickers</span></div>
-          <div class="card-actions">
-            <a class="buy-btn" href="STRIPE_LINK_STICKERS" data-product="stickers">Buy Now</a>
-            <a class="etsy-btn" href="https://www.etsy.com/listing/4535816006/bear-sunflower-digital-sticker-pack?sr_prefetch=1&pf_from=shop_home&ref=shop_home_active_5&dd=1&logging_key=6d284ea197ca04ff76039445fdba63e8c9b2c118%3A4535816006" target="_blank" rel="noopener">View on Etsy</a>
+            <a class="buy-btn" href="inquiry.html?product=headshot-commission">Send Inquiry</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4448917528/custom-artwork-headshotportrait" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
       </div>
 
     </div>
+
+    <div class="subhead">Custom Websites</div>
+    <div class="product-grid">
+
+      <div class="card reveal">
+        <div class="card-body">
+          <h3>Virtual Love Letter Website</h3>
+          <p class="desc">A private, custom-built one-page website written as a love letter: your own words and photos, wrapped in a cozy design you can send as a link instead of a card.</p>
+          <div class="price-row"><span class="price">$40</span><span>Custom website</span></div>
+          <div class="card-actions">
+            <a class="buy-btn" href="inquiry.html?product=love-letter-website">Send Inquiry</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4542465413/custom-virtual-love-letter-website" target="_blank" rel="noopener">View on Etsy</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card reveal">
+        <div class="card-body">
+          <h3>Wedding RSVP Website</h3>
+          <p class="desc">A custom wedding invitation and RSVP website: your details, schedule, and photos, with a built-in RSVP form, all in your wedding's own colors and style.</p>
+          <div class="price-row"><span class="price">$40</span><span>Custom website</span></div>
+          <div class="card-actions">
+            <a class="buy-btn" href="inquiry.html?product=wedding-rsvp-website">Send Inquiry</a>
+            <a class="etsy-btn" href="https://www.etsy.com/listing/4540615745/custom-wedding-invitation-website" target="_blank" rel="noopener">View on Etsy</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="info" id="info">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">the fine print</span>
+      <h2>Commission Info</h2>
+      <p>Everything worth knowing before you commission a piece.</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Payment</h3>
+        <ul>
+          <li>Full payment is required once your inquiry is approved, before I begin work.</li>
+          <li>All prices are listed in USD.</li>
+          <li>Pay directly through this site or my Etsy shop. I also accept PayPal, Cash App, Zelle, and Apple Pay directly.</li>
+          <li>Open to alternative arrangements like art trades or gift cards. Just message me first.</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Terms</h3>
+        <ul>
+          <li>Please give credit for all art to me, MissTy.</li>
+          <li>I can draw characters, real people, and pretty much any request, but I don't draw monsters.</li>
+          <li>Prices may change for excessive detail or repeated edits.</li>
+          <li>I reserve the right to decline any commission, whether it's outside my skill level, something I'm not comfortable with, or for any other reason.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="info-note">Questions about any of this? Reach out before you order and I'm happy to talk it through.</p>
   </div>
 </section>
 
@@ -321,18 +385,23 @@
     <div class="how-grid">
         <div class="how-step">
           <div class="num">1</div>
-          <h3>Choose your printable</h3>
-          <p>Pick a set above and tap Buy Now to check out securely through Stripe.</p>
+          <h3>Send your inquiry</h3>
+          <p>Tell me what you're picturing and share reference photos. No payment required yet.</p>
         </div>
         <div class="how-step">
           <div class="num">2</div>
-          <h3>Get your download</h3>
-          <p>After payment, you'll land on a page with your download link — no waiting, no shipping.</p>
+          <h3>I review it</h3>
+          <p>I typically respond within 24 hours to confirm or discuss your request.</p>
         </div>
         <div class="how-step">
           <div class="num">3</div>
-          <h3>Print & enjoy</h3>
-          <p>Print at home, at a local shop, or use it digitally in your favorite planner app.</p>
+          <h3>Pay to confirm</h3>
+          <p>Once approved, you'll get a secure payment link to lock in your spot.</p>
+        </div>
+        <div class="how-step">
+          <div class="num">4</div>
+          <h3>Get your custom piece</h3>
+          <p>I create it by hand and email you the finished art or your live website link. Track your order status any time.</p>
         </div>
     </div>
   </div>
@@ -341,28 +410,30 @@
 <footer>
   <div class="wrap">
     <div>
-      <a href="#top" class="brand" style="font-size:1.5rem;">🐻 Honnibear</a>
-      <p style="max-width:32ch; opacity:0.75; font-size:0.92rem; margin-top:12px;">Sweet printables & digital goods for your everyday planning.</p>
+      <a href="#top" class="brand" style="font-size:1.5rem;">Honnibear</a>
+      <p style="max-width:32ch; opacity:0.75; font-size:0.92rem; margin-top:12px;">Custom art commissions and custom websites, made by hand.</p>
     </div>
     <div class="footer-cols">
       <div>
         <h4>Shop</h4>
         <ul>
-          <li><a href="#shop">All Products</a></li>
-          <li><a href="ETSY_SHOP_LINK" target="_blank" rel="noopener">Etsy Shop</a></li>
+          <li><a href="#shop">All Commissions</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="commission-status.html">Order Status</a></li>
+          <li><a href="https://www.etsy.com/shop/Honnibear" target="_blank" rel="noopener">Etsy Shop</a></li>
         </ul>
       </div>
       <div>
         <h4>Connect</h4>
         <ul>
           <li><a href="https://www.pinterest.com/honnibearr/" target="_blank" rel="noopener">Pinterest</a></li>
-          <li><a href="INSTAGRAM_LINK" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="mailto:Honnibearr@gmail.com">Email Us</a></li>
+          <li><a href="https://www.instagram.com/honnibear_" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="mailto:Honnibearr@gmail.com">Email Me</a></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="footer-bottom">© 2026 Honnibear. All designs are for personal use only unless otherwise licensed.</div>
+  <div class="footer-bottom">© 2026 Honnibear. All artwork and designs are custom-made and © Honnibear.</div>
 </footer>
 
 <script>
@@ -370,6 +441,21 @@
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
   }, {threshold:0.12});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks = document.getElementById('navlinks');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    navLinks.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
 </script>
 
 </body>

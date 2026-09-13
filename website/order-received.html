@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Received | Honnibear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/shared.css">
+</head>
+<body>
+
+<nav class="simple">
+  <div class="wrap">
+    <a href="index.html" class="brand"><img src="images/logo.png" alt="Honnibear logo"> Honnibear</a>
+    <a href="commission-status.html" style="font-weight:700; font-size:0.92rem; text-decoration:none;">Check Order Status</a>
+  </div>
+</nav>
+
+<div class="wrap" style="max-width:640px;">
+  <div class="panel">
+    <h1 class="page-title" id="page-title">Thanks!</h1>
+    <div id="messages"></div>
+    <div id="loading" class="spinner-text">Confirming your payment…</div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  const messagesEl = document.getElementById('messages');
+  const loadingEl = document.getElementById('loading');
+  const titleEl = document.getElementById('page-title');
+
+  function showMessage(text, type){
+    messagesEl.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
+  }
+
+  if (!sessionId) {
+    loadingEl.style.display = 'none';
+    showMessage('I couldn\'t find a Stripe session in this link. If you just paid, use the link from your confirmation email, or <a href="commission-status.html">check your order status here</a>.', 'error');
+    return;
+  }
+
+  fetch(window.HONNIBEAR_API_BASE + '/api/orders/by-session/' + encodeURIComponent(sessionId))
+    .then(function(res){ return res.json().then(function(body){ return { ok: res.ok, body: body }; }); })
+    .then(function(result){
+      loadingEl.style.display = 'none';
+      if (!result.ok) { showMessage(result.body.error, 'error'); return; }
+      const order = result.body;
+      titleEl.textContent = 'Payment received!';
+      showMessage('Your payment for ' + order.product_name + ' is confirmed. I\'ll begin working on it and email you when it\'s finished. Your order code is <strong>' + order.order_code + '</strong>, use it any time on the <a href="commission-status.html">Order Status page</a>.', 'success');
+    })
+    .catch(function(){
+      loadingEl.style.display = 'none';
+      showMessage('Could not reach the Honnibear server. Please refresh in a moment, or contact me if this keeps happening.', 'error');
+    });
+})();
+</script>
+
+</body>
+</html>
