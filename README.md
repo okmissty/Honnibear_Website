@@ -1,4 +1,4 @@
-# Honnibear 🐻🌻
+# Honnibear 
 
 The brand website for **Honnibear** — cute, honey-toned printable planners, trackers, digital stickers, and custom art commissions.
 
