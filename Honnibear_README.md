@@ -22,30 +22,32 @@ Outstanding:
 
 ## What this is
 
-A full-stack commission storefront:
+A full-stack commission storefront built around an inquire-first workflow, not an instant checkout:
 
-- Customers buy through a Stripe Payment Link.
-- A Stripe webhook hits the backend, which creates an order record in Postgres.
-- The customer is sent to an intake form (reference photos for art, letter text or wedding details for a website) tied to that order.
-- Every order is managed from an auth-protected admin dashboard: view submitted details and reference photos, and move each order through `paid -> details_submitted -> in_progress -> delivered`.
+- A customer sends an inquiry (no payment yet) with their name, email, reference photos, and commission details, tied to a product.
+- MissTy reviews it from the admin dashboard and approves or declines, typically within 24 hours.
+- Approving generates a personalized Stripe payment link (that product's Payment Link plus the order's own code as `client_reference_id`) and emails it to the customer.
+- Once paid, a Stripe webhook matches the payment back to that exact order by its code and marks it `paid`.
+- Every order is managed from an auth-protected admin dashboard, moving through `pending_review -> approved -> paid -> in_progress -> delivered` (or `pending_review -> declined`).
 - Customers can check their own order status any time with their order code and email, no account needed.
 
-This replaces the earlier "Stripe -> static thank-you page with a download link" model, which worked for instant PDF downloads but not for made-to-order work.
+This replaces an earlier "buy first, ask questions later" model: going straight to checkout skipped the conversation a commission artist needs to have before committing to custom work.
 
 ## Repo layout
 
 ```
 website/                  Static frontend: plain HTML/CSS/JS, no build step
-  index.html                Homepage: commissions, custom websites, Buy Now buttons
+  index.html                Homepage: commissions, custom websites, Send Inquiry buttons
+  inquiry.html               Pre-payment inquiry form (name, email, details, reference photos)
   gallery.html               Portfolio page for past commission work
-  order-received.html        Post-payment intake form (reads ?session_id= from Stripe redirect)
+  order-received.html        Post-payment confirmation (reads ?session_id= from Stripe redirect)
   commission-status.html     Public order status lookup (order code + email)
   admin/
     login.html                 Admin sign-in
-    dashboard.html              Order list, detail view, status updates
+    dashboard.html              Order list, detail view, approve/decline, status updates
   js/
     config.js                   Points the frontend at the backend API URL
-    formFields.js                Shared per-product intake field definitions
+    formFields.js                Client-side product catalog: name/type/fields per slug
   css/shared.css              Styles for the utility pages (index.html and gallery.html keep their own inline styles)
   images/                      Logo
   SETUP_GUIDE.md               Full walkthrough: Stripe, Render deploy, environment variables
@@ -61,14 +63,17 @@ server/                   Backend API: Node/Express + PostgreSQL
       migrate.js                    Runs schema.sql against DATABASE_URL (manual/local use)
       seedAdmin.js                   Creates or updates the admin login (manual/local use)
     routes/
-      webhooks.js                    POST /api/webhooks/stripe
-      orders.js                       Customer-facing: lookup, intake, status
-      admin.js                         Admin-only: list, detail, status, files
+      inquiries.js                    POST /api/inquiries (public, rate-limited)
+      webhooks.js                      POST /api/webhooks/stripe
+      orders.js                         Customer-facing: by-session lookup, status
+      admin.js                           Admin-only: list, detail, approve, decline, status, files
     services/
-      catalog.js                       Product slug to name/price/type
-      orderCode.js                      Short public order codes (HB-XXXXXX)
-      email.js                           Order confirmation and admin alert emails
-    middleware/auth.js                JWT verification for admin routes
+      catalog.js                         Product slug to name/price/type/Stripe link
+      orderCode.js                        Short public order codes (HB-XXXXXX)
+      email.js                             Inquiry, approval, decline, and payment emails
+    middleware/
+      auth.js                              JWT verification for admin routes
+      rateLimit.js                          In-memory per-IP rate limit for the inquiry form
   .env.example
   package.json
 ```
@@ -78,9 +83,9 @@ server/                   Backend API: Node/Express + PostgreSQL
 - **Frontend:** plain HTML, CSS, and vanilla JS. No framework, no build step. Fonts from Google Fonts.
 - **Backend:** Node.js and Express 5, PostgreSQL (`pg`), JWT authentication (`jsonwebtoken` and `bcryptjs`), file uploads (`multer`), the Stripe SDK for webhook verification, and Nodemailer for email (optional; logs to console if SMTP isn't configured).
 
-## How checkout maps to a product
+## How a payment maps back to an order
 
-Each product has its own Stripe Payment Link. Each "Buy Now" button also appends `?client_reference_id=<product-slug>` to its link (for example, `...?client_reference_id=full-body-commission`). Stripe stores that value on the Checkout Session and echoes it back in the webhook, which is how the backend confirms exactly which product was purchased. See `server/src/services/catalog.js` for the slug list, and the Buy Now buttons in `website/index.html` for the link-to-slug mapping.
+Each product has its own Stripe Payment Link, used only after an inquiry is approved. The admin approve action builds that product's link with the order's own code attached as `client_reference_id` (for example, `...?client_reference_id=HB-7K3QF9`) and emails it to the customer. Stripe echoes that value back on the webhook, which is how the backend matches the payment to the exact order that was approved, rather than just knowing which product was bought. See `server/src/services/catalog.js` for the product-to-link mapping.
 
 ## Local development
 
@@ -98,7 +103,7 @@ python3 -m http.server 8080   # or any static file server
 # deployed Render URL it defaults to
 ```
 
-Visit `http://localhost:8080/index.html`. To test the full flow locally without a real Stripe payment, POST a signed fake `checkout.session.completed` event straight to `/api/webhooks/stripe` (see `SETUP_GUIDE.md` for a ready-made example), then open `order-received.html?session_id=<the session id>`.
+Visit `http://localhost:8080/index.html`, send an inquiry, then log into `/admin/login.html` to approve or decline it. To test payment locally without a real Stripe transaction, POST a signed fake `checkout.session.completed` event straight to `/api/webhooks/stripe` with `client_reference_id` set to the approved order's code (see `SETUP_GUIDE.md` for a ready-made example), then open `order-received.html?session_id=<the session id>`.
 
 ## Deployment
 

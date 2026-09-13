@@ -35,8 +35,10 @@
       <input type="text" id="search" placeholder="Search by email or order code…">
       <select id="status-filter">
         <option value="">All statuses</option>
+        <option value="pending_review">Pending review</option>
+        <option value="approved">Approved</option>
+        <option value="declined">Declined</option>
         <option value="paid">Paid</option>
-        <option value="details_submitted">Details submitted</option>
         <option value="in_progress">In progress</option>
         <option value="delivered">Delivered</option>
       </select>
@@ -125,8 +127,8 @@
           return '<tr data-id="' + o.id + '">' +
             '<td>' + o.order_code + '</td>' +
             '<td>' + o.product_name + '</td>' +
-            '<td>' + (o.customer_email || '—') + '</td>' +
-            '<td>$' + ((o.amount_cents || 0) / 100).toFixed(2) + '</td>' +
+            '<td>' + (o.customer_name || o.customer_email || '—') + '</td>' +
+            '<td>' + (o.amount_cents ? '$' + (o.amount_cents / 100).toFixed(2) : '—') + '</td>' +
             '<td><span class="status-pill status-' + o.status + '">' + o.status.replace('_',' ') + '</span></td>' +
             '<td>' + new Date(o.created_at).toLocaleDateString() + '</td>' +
           '</tr>';
@@ -158,24 +160,38 @@
 
   function renderModal(data){
     const order = data.order;
+    const product = window.HonnibearFields.productForSlug(order.product_slug);
     const fields = window.HonnibearFields.fieldsForSlug(order.product_slug);
     const detailValues = (data.details && data.details.details) || {};
 
     let html = '<h2 style="color:var(--rust); margin-top:0;">' + order.product_name + '</h2>';
     html += '<div class="kv">' +
       '<dt>Order</dt><dd>' + order.order_code + '</dd>' +
-      '<dt>Customer</dt><dd>' + (order.customer_email || '—') + '</dd>' +
-      '<dt>Amount</dt><dd>$' + ((order.amount_cents || 0) / 100).toFixed(2) + '</dd>' +
+      '<dt>Customer</dt><dd>' + (order.customer_name ? order.customer_name + ' &middot; ' : '') + (order.customer_email || '—') + '</dd>' +
+      '<dt>Status</dt><dd><span class="status-pill status-' + order.status + '">' + order.status.replace('_',' ') + '</span></dd>' +
+      (order.amount_cents ? '<dt>Amount</dt><dd>$' + (order.amount_cents / 100).toFixed(2) + '</dd>' : '') +
       '<dt>Placed</dt><dd>' + new Date(order.created_at).toLocaleString() + '</dd>' +
+      (order.notes ? '<dt>Notes</dt><dd>' + String(order.notes).replace(/</g,'&lt;') + '</dd>' : '') +
     '</div>';
 
-    html += '<label for="status-select">Status</label>';
-    html += '<select id="status-select">' +
-      ['paid','details_submitted','in_progress','delivered'].map(function(s){
-        return '<option value="' + s + '"' + (s === order.status ? ' selected' : '') + '>' + s.replace('_',' ') + '</option>';
-      }).join('') +
-    '</select>';
-    html += '<button class="btn" id="save-status-btn">Update Status</button>';
+    if (order.status === 'pending_review') {
+      html += '<div class="message info">New inquiry. Approve to send a payment link, or decline if you can\'t take it on.</div>';
+      html += '<div style="display:flex; gap:10px; margin-top:10px;">' +
+        '<button class="btn" id="approve-btn" style="margin-top:0;">Approve &amp; Send Payment Link</button>' +
+        '<button class="btn btn-secondary" id="decline-btn" style="margin-top:0;">Decline</button>' +
+      '</div>';
+    } else if (order.status === 'approved' && product) {
+      const paymentLink = product.stripeLink + '?client_reference_id=' + encodeURIComponent(order.order_code);
+      html += '<div class="message info">Waiting on payment. Payment link (already emailed to the customer):<br><code style="word-break:break-all;">' + paymentLink + '</code></div>';
+    } else if (['paid','in_progress','delivered'].includes(order.status)) {
+      html += '<label for="status-select">Status</label>';
+      html += '<select id="status-select">' +
+        ['in_progress','delivered'].map(function(s){
+          return '<option value="' + s + '"' + (s === order.status ? ' selected' : '') + '>' + s.replace('_',' ') + '</option>';
+        }).join('') +
+      '</select>';
+      html += '<button class="btn" id="save-status-btn">Update Status</button>';
+    }
 
     if (data.details) {
       html += '<h3 style="margin-top:26px;">Commission Details</h3><div class="kv">';
@@ -183,8 +199,6 @@
         html += '<dt>' + f.label + '</dt><dd>' + (detailValues[f.name] ? String(detailValues[f.name]).replace(/</g,'&lt;') : '<em>—</em>') + '</dd>';
       });
       html += '</div>';
-    } else {
-      html += '<div class="message info" style="margin-top:22px;">Customer hasn\'t submitted their details yet.</div>';
     }
 
     if (data.files && data.files.length) {
@@ -194,18 +208,49 @@
     document.getElementById('modal-content').innerHTML = html;
     document.getElementById('modal-backdrop').style.display = 'flex';
 
-    document.getElementById('save-status-btn').addEventListener('click', function(){
-      const newStatus = document.getElementById('status-select').value;
-      authedFetch('/api/admin/orders/' + order.id + '/status', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      }).then(function(result){
-        if (!result.ok) { alert(result.body.error); return; }
-        closeModal();
-        loadOrders();
+    const approveBtn = document.getElementById('approve-btn');
+    if (approveBtn) {
+      approveBtn.addEventListener('click', function(){
+        if (!confirm('Approve this inquiry and email the customer a payment link?')) return;
+        authedFetch('/api/admin/orders/' + order.id + '/approve', { method: 'PATCH' }).then(function(result){
+          if (!result.ok) { alert(result.body.error); return; }
+          closeModal();
+          loadOrders();
+        });
       });
-    });
+    }
+    const declineBtn = document.getElementById('decline-btn');
+    if (declineBtn) {
+      declineBtn.addEventListener('click', function(){
+        const reason = prompt('Optional note to include in the decline email (leave blank to skip):', '');
+        if (reason === null) return;
+        authedFetch('/api/admin/orders/' + order.id + '/decline', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reason: reason }),
+        }).then(function(result){
+          if (!result.ok) { alert(result.body.error); return; }
+          closeModal();
+          loadOrders();
+        });
+      });
+    }
+
+    const saveStatusBtn = document.getElementById('save-status-btn');
+    if (saveStatusBtn) {
+      saveStatusBtn.addEventListener('click', function(){
+        const newStatus = document.getElementById('status-select').value;
+        authedFetch('/api/admin/orders/' + order.id + '/status', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus }),
+        }).then(function(result){
+          if (!result.ok) { alert(result.body.error); return; }
+          closeModal();
+          loadOrders();
+        });
+      });
+    }
 
     if (data.files && data.files.length) {
       const grid = document.getElementById('thumb-grid');

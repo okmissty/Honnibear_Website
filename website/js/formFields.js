@@ -1,6 +1,7 @@
-// Shared field definitions for the commission intake form (order-received.html)
-// and the admin order detail view (admin/dashboard.html), so both agree on
-// what each product type collects without duplicating the list twice.
+// Client-side mirror of server/src/services/catalog.js: enough product info
+// (name, type, and which details to collect) for inquiry.html to render the
+// right form instantly from a ?product= slug, with no backend round trip.
+// The admin dashboard also reuses fieldsForSlug() to label submitted details.
 window.HonnibearFields = (function(){
   const ART_FIELDS = [
     { name: 'subjectDescription', label: 'Who/what is this commission of?', type: 'textarea', required: true },
@@ -21,11 +22,21 @@ window.HonnibearFields = (function(){
     { name: 'additionalNotes', label: 'Additional notes', type: 'textarea', required: false },
   ];
 
+  const PRODUCTS = {
+    'full-body-commission': { name: 'Full Body Commission', type: 'art', fields: ART_FIELDS, stripeLink: 'https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05' },
+    'half-body-commission': { name: 'Half Body Commission', type: 'art', fields: ART_FIELDS, stripeLink: 'https://buy.stripe.com/9B66oH6Hr815aIve8D5gc06' },
+    'headshot-commission': { name: 'Headshot Commission', type: 'art', fields: ART_FIELDS, stripeLink: 'https://buy.stripe.com/00w7sL3vfftx5ob9Sn5gc07' },
+    'love-letter-website': { name: 'Virtual Love Letter Website', type: 'website', fields: LOVE_LETTER_FIELDS, stripeLink: 'https://buy.stripe.com/14A28r4zj5SXcQD0hN5gc08' },
+    'wedding-rsvp-website': { name: 'Wedding RSVP Website', type: 'website', fields: WEDDING_FIELDS, stripeLink: 'https://buy.stripe.com/8x24gz9TD3KP4k77Kf5gc09' },
+  };
+
   function fieldsForSlug(slug){
-    if (slug === 'love-letter-website') return LOVE_LETTER_FIELDS;
-    if (slug === 'wedding-rsvp-website') return WEDDING_FIELDS;
-    return ART_FIELDS;
+    return (PRODUCTS[slug] || PRODUCTS['full-body-commission']).fields;
   }
 
-  return { fieldsForSlug };
+  function productForSlug(slug){
+    return PRODUCTS[slug] || null;
+  }
+
+  return { PRODUCTS, fieldsForSlug, productForSlug };
 })();

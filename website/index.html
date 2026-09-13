@@ -178,8 +178,9 @@
   .info-note{margin-top:24px; font-size:0.9rem; opacity:0.75; text-align:center;}
 
   /* ---------- how it works ---------- */
-  .how-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
-  @media (max-width:780px){ .how-grid{grid-template-columns:1fr!important;} }
+  .how-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px;}
+  @media (max-width:960px){ .how-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .how-grid{grid-template-columns:1fr!important;} }
   .how-step{background:var(--white); border:1px solid var(--line); border-radius:20px; padding:28px; text-align:center;}
   .how-step .num{
     width:44px; height:44px; border-radius:50%; background:var(--gold); color:var(--brown); font-family:'Fredoka'; font-weight:700;
@@ -268,7 +269,7 @@
     <div class="section-head">
       <span class="kicker">the collection</span>
       <h2>Shop Honnibear</h2>
-      <p>Buy directly here, or find every listing on my Etsy shop. After checkout, you'll fill out a short form with your details: reference photos for art, or your letter and wedding info for a website.</p>
+      <p>Send an inquiry directly here, or find every listing on my Etsy shop. I review every inquiry myself and typically respond within 24 hours; if I take it on, you'll get a secure payment link to lock in your spot.</p>
     </div>
 
     <div class="subhead">Art Commissions</div>
@@ -280,7 +281,7 @@
           <p class="desc">A fully custom, hand-drawn full-body portrait of your subject: you, a loved one, or a pet, in my warm, honey-toned style.</p>
           <div class="price-row"><span class="price">$60</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05?client_reference_id=full-body-commission" data-product="full-body-commission">Buy Now</a>
+            <a class="buy-btn" href="inquiry.html?product=full-body-commission">Send Inquiry</a>
             <a class="etsy-btn" href="https://www.etsy.com/listing/4448924264/custom-artwork-full-body-commissions" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
@@ -292,7 +293,7 @@
           <p class="desc">A custom waist-up portrait, hand-drawn in the same cozy style: a beautiful piece with a little less detail, and a friendlier price, than a full body.</p>
           <div class="price-row"><span class="price">$45</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="https://buy.stripe.com/9B66oH6Hr815aIve8D5gc06?client_reference_id=half-body-commission" data-product="half-body-commission">Buy Now</a>
+            <a class="buy-btn" href="inquiry.html?product=half-body-commission">Send Inquiry</a>
             <a class="etsy-btn" href="https://www.etsy.com/listing/4448920427/custom-artwork-half-body-commissions" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
@@ -304,7 +305,7 @@
           <p class="desc">A custom headshot or portrait focused on the face, the most affordable way to get a one-of-a-kind piece of you or someone you love.</p>
           <div class="price-row"><span class="price">$25</span><span>Digital portrait</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="https://buy.stripe.com/00w7sL3vfftx5ob9Sn5gc07?client_reference_id=headshot-commission" data-product="headshot-commission">Buy Now</a>
+            <a class="buy-btn" href="inquiry.html?product=headshot-commission">Send Inquiry</a>
             <a class="etsy-btn" href="https://www.etsy.com/listing/4448917528/custom-artwork-headshotportrait" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
@@ -321,7 +322,7 @@
           <p class="desc">A private, custom-built one-page website written as a love letter: your own words and photos, wrapped in a cozy design you can send as a link instead of a card.</p>
           <div class="price-row"><span class="price">$40</span><span>Custom website</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="https://buy.stripe.com/14A28r4zj5SXcQD0hN5gc08?client_reference_id=love-letter-website" data-product="love-letter-website">Buy Now</a>
+            <a class="buy-btn" href="inquiry.html?product=love-letter-website">Send Inquiry</a>
             <a class="etsy-btn" href="https://www.etsy.com/listing/4542465413/custom-virtual-love-letter-website" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
@@ -333,7 +334,7 @@
           <p class="desc">A custom wedding invitation and RSVP website: your details, schedule, and photos, with a built-in RSVP form, all in your wedding's own colors and style.</p>
           <div class="price-row"><span class="price">$40</span><span>Custom website</span></div>
           <div class="card-actions">
-            <a class="buy-btn" href="https://buy.stripe.com/8x24gz9TD3KP4k77Kf5gc09?client_reference_id=wedding-rsvp-website" data-product="wedding-rsvp-website">Buy Now</a>
+            <a class="buy-btn" href="inquiry.html?product=wedding-rsvp-website">Send Inquiry</a>
             <a class="etsy-btn" href="https://www.etsy.com/listing/4540615745/custom-wedding-invitation-website" target="_blank" rel="noopener">View on Etsy</a>
           </div>
         </div>
@@ -355,7 +356,7 @@
       <div class="info-card">
         <h3>Payment</h3>
         <ul>
-          <li>All commissions must be paid upfront.</li>
+          <li>Full payment is required once your inquiry is approved, before I begin work.</li>
           <li>All prices are listed in USD.</li>
           <li>Pay directly through this site or my Etsy shop. I also accept PayPal, Cash App, Zelle, and Apple Pay directly.</li>
           <li>Open to alternative arrangements like art trades or gift cards. Just message me first.</li>
@@ -384,16 +385,21 @@
     <div class="how-grid">
         <div class="how-step">
           <div class="num">1</div>
-          <h3>Choose & purchase</h3>
-          <p>Pick a commission or custom website above and check out securely through Stripe.</p>
+          <h3>Send your inquiry</h3>
+          <p>Tell me what you're picturing and share reference photos. No payment required yet.</p>
         </div>
         <div class="how-step">
           <div class="num">2</div>
-          <h3>Tell me the details</h3>
-          <p>Right after payment, you'll fill out a quick form: reference photos for art, or your letter and wedding info for a website.</p>
+          <h3>I review it</h3>
+          <p>I typically respond within 24 hours to confirm or discuss your request.</p>
         </div>
         <div class="how-step">
           <div class="num">3</div>
+          <h3>Pay to confirm</h3>
+          <p>Once approved, you'll get a secure payment link to lock in your spot.</p>
+        </div>
+        <div class="how-step">
+          <div class="num">4</div>
           <h3>Get your custom piece</h3>
           <p>I create it by hand and email you the finished art or your live website link. Track your order status any time.</p>
         </div>

@@ -65,8 +65,10 @@ input[type=file]{width:100%; padding:10px 0; font-size:0.9rem;}
   display:inline-block; padding:5px 14px; border-radius:999px; font-weight:700; font-size:0.8rem;
   text-transform:capitalize;
 }
-.status-paid{background:#FFE9C2; color:#8A5A00;}
-.status-details_submitted{background:#D9E7FA; color:#1E4E8C;}
+.status-pending_review{background:#FFE9C2; color:#8A5A00;}
+.status-approved{background:#D9E7FA; color:#1E4E8C;}
+.status-declined{background:#F5D8D8; color:#8C2E2E;}
+.status-paid{background:#EAF3E2; color:#4B6B2C;}
 .status-in_progress{background:#F0D8FA; color:#6C1E8C;}
 .status-delivered{background:#D8F5DE; color:#1E7A3A;}
 

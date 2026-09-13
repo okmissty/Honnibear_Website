@@ -7,19 +7,24 @@ This covers everything to get the full-stack commission system live: the Stripe 
 ## 1. How the order flow works
 
 ```
-Customer clicks "Buy Now"
-  -> Stripe Payment Link (?client_reference_id=<product-slug>)
-  -> customer pays
-  -> Stripe sends a "checkout.session.completed" webhook to our backend
-  -> backend creates an order row in Postgres (status: paid) + emails the customer
+Customer clicks "Send Inquiry" on a product
+  -> inquiry.html?product=<slug>
+  -> customer submits name, email, commission details, reference photos
+  -> backend creates an order row (status: pending_review) + emails customer + admin
+  -> MissTy reviews it from /admin/dashboard.html, typically within 24 hours
+  -> Approve: backend builds that product's Payment Link with
+     ?client_reference_id=<order_code> and emails it to the customer
+     (order status -> approved)
+  -> Decline: order status -> declined, customer emailed (with an optional reason)
+  -> customer pays via the emailed link
+  -> Stripe sends a "checkout.session.completed" webhook to the backend
+  -> backend matches the order by its code (client_reference_id) and marks it paid
   -> Stripe redirects the customer to order-received.html?session_id=...
-  -> customer fills out the intake form (reference photos / letter / wedding details)
-  -> backend saves those details + files, order status -> details_submitted
-  -> Honnibear works the order from the admin dashboard, updating status as it goes
+  -> MissTy works the order from the admin dashboard, updating status as she goes
   -> customer can check status any time on commission-status.html
 ```
 
-Each product has its own **Stripe Payment Link** — see `index.html`'s Buy Now buttons. Each link also has `?client_reference_id=<slug>` appended (e.g. `full-body-commission`); Stripe echoes that back on the webhook, which is how the backend confirms exactly which product was purchased. The current link-to-product mapping:
+Each product has its own **Stripe Payment Link**, used only once an inquiry is approved (see `server/src/services/catalog.js`). The admin approve action appends `?client_reference_id=<order_code>` to that link — not a product slug — since the product is already known from the inquiry; Stripe echoes the order code back on the webhook, which is how the backend matches the payment to the exact order that was approved. The current product-to-link mapping:
 
 | Product | Slug | Payment Link |
 |---|---|---|
@@ -29,7 +34,7 @@ Each product has its own **Stripe Payment Link** — see `index.html`'s Buy Now 
 | Virtual Love Letter Website | `love-letter-website` | https://buy.stripe.com/14A28r4zj5SXcQD0hN5gc08 |
 | Wedding RSVP Website | `wedding-rsvp-website` | https://buy.stripe.com/8x24gz9TD3KP4k77Kf5gc09 |
 
-If a link ever needs to change, update the `href` on that product's Buy Now button in `index.html` — no backend changes needed as long as the `client_reference_id` still matches a slug in `server/src/services/catalog.js`.
+If a link ever needs to change, update `stripeLink` for that product in `server/src/services/catalog.js` (and the matching entry in `website/js/formFields.js`, which mirrors it so the admin dashboard can display the link without a round trip) — no other code changes needed.
 
 ---
 
@@ -87,10 +92,13 @@ Nothing to run — the backend provisions the admin account automatically on eve
 
 ## 6. Test before sharing publicly
 
-1. Use Stripe **test mode** and a test card (`4242 4242 4242 4242`, any future expiry/CVC) to make a full purchase.
-2. Confirm you land on `order-received.html` with the right product's intake form, submit it, and confirm the order shows up in `/admin/dashboard.html`.
-3. Confirm `commission-status.html` returns the right status for that order code + email.
-4. Only then switch Stripe to **live mode**, and re-point the Payment Link / webhook secret / secret key at your live Stripe keys.
+1. Send yourself a test inquiry from `index.html` (pick any product, use an email you can check) and confirm it shows up in `/admin/dashboard.html` under "Pending review", with your details and reference photos.
+2. Approve it, and confirm you (as the "customer") receive the approval email with a working payment link. If SMTP isn't configured yet, check the Render server logs instead — they print the same content.
+3. Use Stripe **test mode** and a test card (`4242 4242 4242 4242`, any future expiry/CVC) to pay through that link.
+4. Confirm you land on `order-received.html` with a "payment received" message, and that the order's status flipped to "paid" in the admin dashboard.
+5. Confirm `commission-status.html` returns the right status for that order code + email at each stage.
+6. Try declining a separate test inquiry too, and confirm the decline email/log includes your reason if you gave one.
+7. Only then switch Stripe to **live mode**, and re-point the webhook secret / secret key at your live Stripe keys.
 
 ---
 

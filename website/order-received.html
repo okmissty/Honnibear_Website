@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tell Me the Details | Honnibear</title>
+<title>Payment Received | Honnibear</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/shared.css">
@@ -19,25 +19,20 @@
 
 <div class="wrap" style="max-width:640px;">
   <div class="panel">
-    <h1 class="page-title">Thanks for your order!</h1>
-    <p class="subtitle" id="intro-text">One quick step left: tell me the details so I can get started.</p>
-
+    <h1 class="page-title" id="page-title">Thanks!</h1>
     <div id="messages"></div>
-    <div id="loading" class="spinner-text">Loading your order…</div>
-    <form id="intake-form" style="display:none;"></form>
+    <div id="loading" class="spinner-text">Confirming your payment…</div>
   </div>
 </div>
 
 <script src="js/config.js"></script>
-<script src="js/formFields.js"></script>
 <script>
 (function(){
   const params = new URLSearchParams(window.location.search);
   const sessionId = params.get('session_id');
   const messagesEl = document.getElementById('messages');
   const loadingEl = document.getElementById('loading');
-  const formEl = document.getElementById('intake-form');
-  const introEl = document.getElementById('intro-text');
+  const titleEl = document.getElementById('page-title');
 
   function showMessage(text, type){
     messagesEl.innerHTML = '<div class="message ' + type + '">' + text + '</div>';
@@ -49,81 +44,14 @@
     return;
   }
 
-  function renderForm(order, product){
-    const fields = window.HonnibearFields.fieldsForSlug(order.product_slug);
-    const isArt = product.type === 'art';
-
-    let html = '<p class="hint" style="margin-bottom:18px;">Order <strong>' + order.order_code + '</strong> &middot; ' + order.product_name + '</p>';
-    fields.forEach(function(f){
-      html += '<label for="' + f.name + '">' + f.label + (f.required ? ' *' : '') + '</label>';
-      if (f.type === 'textarea') {
-        html += '<textarea id="' + f.name + '" name="' + f.name + '"' + (f.required ? ' required' : '') + '></textarea>';
-      } else {
-        html += '<input type="' + f.type + '" id="' + f.name + '" name="' + f.name + '"' + (f.required ? ' required' : '') + '>';
-      }
-    });
-
-    html += '<label for="photos">Reference photos' + (isArt ? '' : ' (optional)') + '</label>';
-    html += '<input type="file" id="photos" name="photos" accept="image/png,image/jpeg,image/webp" multiple>';
-    html += '<div class="hint">JPEG, PNG, or WEBP. Up to 6 photos, 8MB each.' + (isArt ? ' At least one clear reference photo is strongly recommended.' : '') + '</div>';
-
-    html += '<button type="submit" class="btn" id="submit-btn">Submit My Details</button>';
-    formEl.innerHTML = html;
-    formEl.style.display = 'block';
-
-    formEl.addEventListener('submit', function(e){
-      e.preventDefault();
-      submitIntake(order, fields);
-    });
-  }
-
-  function submitIntake(order, fields){
-    const submitBtn = document.getElementById('submit-btn');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting…';
-
-    const details = {};
-    fields.forEach(function(f){ details[f.name] = document.getElementById(f.name).value; });
-
-    const formData = new FormData();
-    formData.append('details', JSON.stringify(details));
-    const photoInput = document.getElementById('photos');
-    Array.from(photoInput.files || []).forEach(function(file){ formData.append('photos', file); });
-
-    fetch(window.HONNIBEAR_API_BASE + '/api/orders/' + encodeURIComponent(order.order_code) + '/intake', {
-      method: 'POST',
-      body: formData,
-    })
-      .then(function(res){ return res.json().then(function(body){ return { ok: res.ok, body: body }; }); })
-      .then(function(result){
-        if (!result.ok) throw new Error(result.body.error || 'Something went wrong.');
-        formEl.style.display = 'none';
-        introEl.textContent = "You're all set!";
-        showMessage("Got it! I'll be in touch by email as I work on your " + order.product_name.toLowerCase() + ". You can check your order status any time using order code <strong>" + order.order_code + "</strong>.", 'success');
-      })
-      .catch(function(err){
-        showMessage(err.message, 'error');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit My Details';
-      });
-  }
-
   fetch(window.HONNIBEAR_API_BASE + '/api/orders/by-session/' + encodeURIComponent(sessionId))
     .then(function(res){ return res.json().then(function(body){ return { ok: res.ok, body: body }; }); })
     .then(function(result){
       loadingEl.style.display = 'none';
       if (!result.ok) { showMessage(result.body.error, 'error'); return; }
       const order = result.body;
-
-      if (order.status !== 'paid') {
-        introEl.textContent = "You've already sent your details!";
-        showMessage('This order (' + order.order_code + ') is currently <span class="status-pill status-' + order.status + '">' + order.status.replace('_',' ') + '</span>. <a href="commission-status.html">Check full status here</a>.', 'info');
-        return;
-      }
-
-      fetch(window.HONNIBEAR_API_BASE + '/api/orders/product/' + encodeURIComponent(order.product_slug))
-        .then(function(res){ return res.json(); })
-        .then(function(product){ renderForm(order, product); });
+      titleEl.textContent = 'Payment received!';
+      showMessage('Your payment for ' + order.product_name + ' is confirmed. I\'ll begin working on it and email you when it\'s finished. Your order code is <strong>' + order.order_code + '</strong>, use it any time on the <a href="commission-status.html">Order Status page</a>.', 'success');
     })
     .catch(function(){
       loadingEl.style.display = 'none';

@@ -5,10 +5,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { pool } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
+const { getProduct } = require('../services/catalog');
+const { sendMail, approvedEmail, declinedEmail } = require('../services/email');
 
 const router = express.Router();
 const UPLOAD_ROOT = path.join(__dirname, '..', '..', 'uploads');
-const VALID_STATUSES = ['paid', 'details_submitted', 'in_progress', 'delivered'];
+const ALL_STATUSES = ['pending_review', 'approved', 'declined', 'paid', 'in_progress', 'delivered'];
+// Once payment happens (via webhook), only these later-stage transitions are
+// meant to be toggled by hand; pending_review moves via approve/decline
+// below instead, since those also have to send the right email.
+const MANUALLY_SETTABLE_STATUSES = ['in_progress', 'delivered'];
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body || {};
@@ -35,7 +41,7 @@ router.get('/orders', async (req, res) => {
 
   const conditions = [];
   const params = [];
-  if (status && VALID_STATUSES.includes(status)) {
+  if (status && ALL_STATUSES.includes(status)) {
     params.push(status);
     conditions.push(`status = $${params.length}`);
   }
@@ -49,7 +55,7 @@ router.get('/orders', async (req, res) => {
   params.push(pageSize, offset);
   const { rows } = await pool.query(
     `SELECT id, order_code, product_slug, product_name, amount_cents, currency,
-            customer_email, status, created_at, updated_at
+            customer_name, customer_email, status, created_at, updated_at
      FROM orders ${where}
      ORDER BY created_at DESC
      LIMIT $${params.length - 1} OFFSET $${params.length}`,
@@ -97,10 +103,66 @@ router.get('/orders/:id/files/:fileId', async (req, res) => {
   return fs.createReadStream(fullPath).pipe(res);
 });
 
+// Approve a pending inquiry: builds that product's personalized payment
+// link (client_reference_id=<order_code>, so the webhook can match the
+// eventual payment straight back to this order) and emails it.
+router.patch('/orders/:id/approve', async (req, res) => {
+  const { rows } = await pool.query('SELECT * FROM orders WHERE id = $1', [req.params.id]);
+  const order = rows[0];
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+  if (order.status !== 'pending_review') {
+    return res.status(409).json({ error: `Only pending inquiries can be approved (this one is ${order.status}).` });
+  }
+
+  const product = getProduct(order.product_slug);
+  if (!product) {
+    return res.status(500).json({ error: `Unknown product slug "${order.product_slug}" - can't build a payment link.` });
+  }
+  const paymentLink = `${product.stripeLink}?client_reference_id=${encodeURIComponent(order.order_code)}`;
+
+  const { rows: updatedRows } = await pool.query(
+    "UPDATE orders SET status = 'approved', updated_at = now() WHERE id = $1 RETURNING *",
+    [order.id]
+  );
+  const updated = updatedRows[0];
+
+  try {
+    await sendMail(approvedEmail(updated, paymentLink));
+  } catch (err) {
+    console.error('Approval email failed to send:', err);
+  }
+
+  return res.json({ order: updated, paymentLink });
+});
+
+router.patch('/orders/:id/decline', async (req, res) => {
+  const { reason } = req.body || {};
+  const { rows } = await pool.query('SELECT * FROM orders WHERE id = $1', [req.params.id]);
+  const order = rows[0];
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+  if (order.status !== 'pending_review') {
+    return res.status(409).json({ error: `Only pending inquiries can be declined (this one is ${order.status}).` });
+  }
+
+  const { rows: updatedRows } = await pool.query(
+    "UPDATE orders SET status = 'declined', notes = $1, updated_at = now() WHERE id = $2 RETURNING *",
+    [reason || null, order.id]
+  );
+  const updated = updatedRows[0];
+
+  try {
+    await sendMail(declinedEmail(updated));
+  } catch (err) {
+    console.error('Decline email failed to send:', err);
+  }
+
+  return res.json(updated);
+});
+
 router.patch('/orders/:id/status', async (req, res) => {
   const { status } = req.body || {};
-  if (!VALID_STATUSES.includes(status)) {
-    return res.status(400).json({ error: `Status must be one of: ${VALID_STATUSES.join(', ')}` });
+  if (!MANUALLY_SETTABLE_STATUSES.includes(status)) {
+    return res.status(400).json({ error: `Status must be one of: ${MANUALLY_SETTABLE_STATUSES.join(', ')}` });
   }
   const { rows } = await pool.query(
     'UPDATE orders SET status = $1, updated_at = now() WHERE id = $2 RETURNING *',

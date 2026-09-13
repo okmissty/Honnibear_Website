@@ -1,14 +1,16 @@
 const express = require('express');
 const Stripe = require('stripe');
 const { pool } = require('../db');
-const { getProduct } = require('../services/catalog');
 const { generateOrderCode } = require('../services/orderCode');
-const { sendMail, orderReceivedEmail, newOrderAdminAlert } = require('../services/email');
+const { sendMail, paymentReceivedEmail, paymentReceivedAdminAlert } = require('../services/email');
 
 const router = express.Router();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-async function insertOrderWithRetry(session, product) {
+// Fallback for a Checkout Session whose client_reference_id doesn't match
+// any approved order (a stale link, a manual Stripe Dashboard test payment,
+// etc.) - still record it instead of silently dropping real money.
+async function insertManualReviewOrder(session) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const orderCode = generateOrderCode();
     try {
@@ -16,14 +18,12 @@ async function insertOrderWithRetry(session, product) {
         `INSERT INTO orders
            (order_code, stripe_session_id, stripe_payment_intent, product_slug,
             product_name, amount_cents, currency, customer_email, status)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'paid')
+         VALUES ($1,$2,$3,'unknown','Unrecognized payment (needs manual review)',$4,$5,$6,'paid')
          RETURNING *`,
         [
           orderCode,
           session.id,
           session.payment_intent || null,
-          product.slug,
-          product.name,
           session.amount_total,
           session.currency || 'usd',
           session.customer_details?.email || session.customer_email || null,
@@ -31,7 +31,6 @@ async function insertOrderWithRetry(session, product) {
       );
       return rows[0];
     } catch (err) {
-      // order_code collision (extremely unlikely) -> retry with a fresh code.
       if (err.code === '23505' && err.constraint === 'orders_order_code_key') {
         continue; // eslint-disable-line no-continue
       }
@@ -61,38 +60,58 @@ router.post('/stripe', async (req, res) => {
   }
 
   const session = event.data.object;
-  const slug = session.client_reference_id;
-  const product = getProduct(slug);
-
-  if (!product) {
-    console.warn(`Checkout session ${session.id} has unknown/missing product slug "${slug}" — recording as a manual-review order.`);
-  }
-
-  const productForInsert = {
-    slug: slug || 'unknown',
-    name: product ? product.name : 'Unrecognized product (needs manual review)',
-  };
+  // client_reference_id is set when an inquiry is approved (see
+  // admin.js's /approve route) to that order's public order_code - not a
+  // product slug, since the product is already known from the inquiry.
+  const orderCode = (session.client_reference_id || '').trim().toUpperCase();
 
   let order;
+  let isNewManualReview = false;
   try {
-    order = await insertOrderWithRetry(session, productForInsert);
+    const { rows } = await pool.query(
+      "SELECT * FROM orders WHERE order_code = $1 AND status = 'approved'",
+      [orderCode]
+    );
+    const approvedOrder = rows[0];
+
+    if (approvedOrder) {
+      const { rows: updatedRows } = await pool.query(
+        `UPDATE orders
+         SET status = 'paid', stripe_session_id = $1, stripe_payment_intent = $2,
+             amount_cents = $3, currency = $4, updated_at = now()
+         WHERE id = $5
+         RETURNING *`,
+        [
+          session.id,
+          session.payment_intent || null,
+          session.amount_total,
+          session.currency || 'usd',
+          approvedOrder.id,
+        ]
+      );
+      order = updatedRows[0];
+    } else {
+      console.warn(`Checkout session ${session.id} has client_reference_id "${orderCode}" that doesn't match an approved order - recording for manual review.`);
+      order = await insertManualReviewOrder(session);
+      isNewManualReview = true;
+    }
   } catch (err) {
     if (err.code === '23505' && err.constraint === 'orders_stripe_session_id_key') {
-      // Stripe retried a webhook we already handled — that's fine, ack it.
+      // Stripe retried a webhook already handled - that's fine, ack it.
       return res.json({ received: true, duplicate: true });
     }
-    console.error('Failed to record order from Stripe webhook:', err);
-    return res.status(500).json({ error: 'Failed to record order.' });
+    console.error('Failed to record payment from Stripe webhook:', err);
+    return res.status(500).json({ error: 'Failed to record payment.' });
   }
 
   // Don't block Stripe's webhook ack on email delivery.
   res.json({ received: true, orderCode: order.order_code });
 
-  if (order.customer_email) {
-    sendMail(orderReceivedEmail(order)).catch((err) => console.error('Order-received email failed:', err));
+  if (!isNewManualReview && order.customer_email) {
+    sendMail(paymentReceivedEmail(order)).catch((err) => console.error('Payment-received email failed:', err));
   }
   if (process.env.ADMIN_EMAIL) {
-    sendMail(newOrderAdminAlert(order)).catch((err) => console.error('Admin alert email failed:', err));
+    sendMail(paymentReceivedAdminAlert(order)).catch((err) => console.error('Admin payment alert email failed:', err));
   }
   return undefined;
 });

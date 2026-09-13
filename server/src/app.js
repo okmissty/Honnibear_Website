@@ -7,8 +7,15 @@ const multer = require('multer');
 const webhooksRouter = require('./routes/webhooks');
 const ordersRouter = require('./routes/orders');
 const adminRouter = require('./routes/admin');
+const inquiriesRouter = require('./routes/inquiries');
+const { simpleRateLimit } = require('./middleware/rateLimit');
 
 const app = express();
+
+// Render (and most PaaS hosts) sit behind a reverse proxy, so req.ip is
+// otherwise always the proxy's address rather than the real client's -
+// needed for the inquiry rate limiter below to work per-visitor.
+app.set('trust proxy', 1);
 
 const allowedOrigins = (process.env.FRONTEND_ORIGIN || '')
   .split(',')
@@ -36,6 +43,7 @@ app.use(express.json());
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/orders', ordersRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/inquiries', simpleRateLimit({ windowMs: 60 * 60 * 1000, max: 8 }), inquiriesRouter);
 
 app.use((req, res) => res.status(404).json({ error: 'Not found.' }));
 
