@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Honnibear — Custom Art Commissions & Website Gifts</title>
-<meta name="description" content="Custom hand-drawn portrait commissions and custom-built love letter & wedding websites by Honnibear.">
+<title>Honnibear | Custom Art Commissions & Website Gifts</title>
+<meta name="description" content="Custom hand-drawn portrait commissions and custom-built love letter and wedding websites by MissTy at Honnibear.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -45,7 +45,7 @@
     backdrop-filter:blur(6px);
     border-bottom:1px solid var(--line);
   }
-  nav .wrap{display:flex; align-items:center; justify-content:space-between; padding-top:14px; padding-bottom:14px;}
+  nav .wrap{position:relative; display:flex; align-items:center; justify-content:space-between; padding-top:14px; padding-bottom:14px; gap:16px;}
   .brand{display:flex; align-items:center; gap:10px; font-family:'Fredoka'; font-weight:700; font-size:1.4rem; color:var(--rust); text-decoration:none;}
   .brand img{width:38px; height:38px;}
   nav ul{list-style:none; display:flex; gap:28px; margin:0; padding:0;}
@@ -55,10 +55,21 @@
     background:var(--rust); color:var(--white)!important; padding:10px 20px; border-radius:999px;
     font-weight:700; text-decoration:none; font-size:0.92rem; white-space:nowrap;
   }
-  .nav-mobile-toggle{display:none;}
+  .nav-mobile-toggle{
+    display:none; background:var(--white); border:1px solid var(--line); border-radius:999px;
+    padding:8px 16px; font-weight:700; font-size:0.85rem; color:var(--rust); cursor:pointer;
+  }
   @media (max-width:780px){
-    nav ul.navlinks{display:none;}
-    .nav-mobile-toggle{display:block; background:none; border:none; font-size:1.6rem; color:var(--rust); cursor:pointer;}
+    nav ul.navlinks{
+      display:none; position:absolute; top:100%; left:24px; right:24px; margin-top:10px;
+      background:var(--white); border:1px solid var(--line); border-radius:16px;
+      flex-direction:column; gap:4px; padding:12px; box-shadow:0 12px 28px rgba(136,63,32,0.14);
+    }
+    nav ul.navlinks.open{display:flex;}
+    nav a.navlink{padding:10px 12px; border-radius:10px;}
+    nav a.navlink:hover{background:var(--cream-lt); border-color:transparent;}
+    .nav-mobile-toggle{display:inline-block;}
+    .nav-cta{display:none;}
   }
 
   /* ---------- hero ---------- */
@@ -94,17 +105,19 @@
     opacity:0.55; filter:blur(2px);
   }
   .hero-cards{position:relative; display:grid; grid-template-columns:1fr 1fr; gap:16px; transform:rotate(-2deg);}
-  .icon-tile{
+  .hero-tile{
     aspect-ratio:1/1; border-radius:18px; box-shadow:0 18px 40px rgba(136,63,32,0.22); border:4px solid var(--white);
-    display:flex; align-items:center; justify-content:center; font-size:3.4rem;
-    background:linear-gradient(135deg, var(--gold) 0%, var(--rust) 100%);
+    display:flex; align-items:center; justify-content:center; padding:18px; text-align:center;
+    background:var(--white);
   }
-  .hero-cards .c2{transform:translateY(28px) rotate(3deg);}
+  .hero-tile img{width:70%;}
+  .hero-tile .script{font-size:1.6rem; line-height:1.25; color:var(--rust);}
+  .hero-cards .c2{transform:translateY(28px) rotate(3deg); background:var(--cream-lt);}
 
   /* ---------- trust strip ---------- */
   .trust{background:var(--white); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
   .trust .wrap{display:flex; justify-content:space-around; flex-wrap:wrap; gap:22px; padding:26px 24px; text-align:center;}
-  .trust .item{font-weight:700; color:var(--rust); font-size:0.95rem; display:flex; align-items:center; gap:8px;}
+  .trust .item{font-weight:700; color:var(--rust); font-size:0.95rem;}
 
   /* ---------- about ---------- */
   .about .wrap{display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:center;}
@@ -131,17 +144,13 @@
     display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:28px;
   }
   .card{
-    background:var(--white); border-radius:22px; overflow:hidden; border:1px solid var(--line);
+    background:var(--white); border-radius:18px; border:1px solid var(--line); border-top:4px solid var(--gold-dark);
     box-shadow:0 10px 26px rgba(136,63,32,0.08);
     display:flex; flex-direction:column;
     transition:transform .18s ease, box-shadow .18s ease;
   }
   .card:hover{transform:translateY(-6px); box-shadow:0 18px 34px rgba(136,63,32,0.16);}
-  .card-visual{
-    aspect-ratio:1/1; width:100%; display:flex; align-items:center; justify-content:center;
-    font-size:4rem; background:linear-gradient(135deg, var(--gold-dark) 0%, var(--rust) 100%);
-  }
-  .card-body{padding:20px 20px 22px; display:flex; flex-direction:column; flex:1;}
+  .card-body{padding:24px 22px; display:flex; flex-direction:column; flex:1;}
   .card-body h3{margin:0 0 6px; font-size:1.2rem; color:var(--brown);}
   .card-body p.desc{font-size:0.92rem; line-height:1.5; opacity:0.85; margin:0 0 16px; flex:1;}
   .price-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
@@ -157,6 +166,16 @@
     padding:10px 14px; border-radius:999px; text-decoration:none; font-size:0.92rem;
     border:2px solid var(--gold-dark);
   }
+
+  /* ---------- commission info ---------- */
+  .info-grid{display:grid; grid-template-columns:1fr 1fr; gap:28px;}
+  @media (max-width:780px){ .info-grid{grid-template-columns:1fr;} }
+  .info-card{background:var(--white); border:1px solid var(--line); border-radius:20px; padding:32px;}
+  .info-card h3{margin:0 0 16px; color:var(--rust); font-size:1.15rem;}
+  .info-card ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:14px;}
+  .info-card li{font-size:0.95rem; line-height:1.55; padding-left:22px; position:relative;}
+  .info-card li::before{content:""; position:absolute; left:0; top:0.55em; width:7px; height:7px; border-radius:50%; background:var(--gold-dark);}
+  .info-note{margin-top:24px; font-size:0.9rem; opacity:0.75; text-align:center;}
 
   /* ---------- how it works ---------- */
   .how-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
@@ -189,12 +208,14 @@
 <nav>
   <div class="wrap">
     <a href="#top" class="brand"><img src="images/logo.png" alt="Honnibear logo"> Honnibear</a>
-    <ul class="navlinks">
+    <ul class="navlinks" id="navlinks">
       <li><a class="navlink" href="#shop">Shop</a></li>
+      <li><a class="navlink" href="gallery.html">Gallery</a></li>
       <li><a class="navlink" href="#about">About</a></li>
-      <li><a class="navlink" href="#how">How It Works</a></li>
+      <li><a class="navlink" href="#info">Commission Info</a></li>
       <li><a class="navlink" href="commission-status.html">Order Status</a></li>
     </ul>
+    <button class="nav-mobile-toggle" id="nav-toggle" aria-expanded="false" aria-controls="navlinks">Menu</button>
     <a class="nav-cta" href="#shop">Commission Now</a>
   </div>
 </nav>
@@ -202,19 +223,19 @@
 <header class="hero" id="top">
   <div class="wrap">
     <div>
-      <span class="eyebrow">🎨 Custom-made, just for you</span>
-      <h1>Custom art & keepsake<br><span>websites, made with love.</span></h1>
-      <p class="lede">Honnibear creates hand-drawn portrait commissions and custom-built love letter & wedding websites — a one-of-a-kind gift for someone you love, or for yourself.</p>
+      <span class="eyebrow">Custom-made, just for you</span>
+      <h1>Custom art & keepsake<br><span>websites, made by hand.</span></h1>
+      <p class="lede">I'm MissTy, and I create hand-drawn portrait commissions and custom-built love letter and wedding websites: a one-of-a-kind gift for someone you love, or for yourself.</p>
       <div class="btn-row">
-        <a href="#shop" class="btn btn-primary">🌻 See Commissions</a>
-        <a href="#about" class="btn btn-secondary">Our Story</a>
+        <a href="#shop" class="btn btn-primary">See Commissions</a>
+        <a href="#about" class="btn btn-secondary">My Story</a>
       </div>
     </div>
     <div class="hero-art">
       <div class="sunburst"></div>
       <div class="hero-cards">
-        <div class="icon-tile c1">🎨</div>
-        <div class="icon-tile c2">💌</div>
+        <div class="hero-tile c1"><img src="images/logo.png" alt="Honnibear logo"></div>
+        <div class="hero-tile c2"><span class="script">hand-drawn,<br>one at a time</span></div>
       </div>
     </div>
   </div>
@@ -222,10 +243,10 @@
 
 <div class="trust">
   <div class="wrap">
-    <div class="item">✏️ Hand-Drawn, Made to Order</div>
-    <div class="item">🐝 Small, Independent Shop</div>
-    <div class="item">💻 Custom-Built Websites</div>
-    <div class="item">💛 A Gift They'll Actually Remember</div>
+    <div class="item">Hand-Drawn, Made to Order</div>
+    <div class="item">One Independent Artist</div>
+    <div class="item">Custom-Built Websites</div>
+    <div class="item">A Gift They'll Actually Remember</div>
   </div>
 </div>
 
@@ -235,9 +256,9 @@
       <span class="script">"a little honey<br>for your day"</span>
     </div>
     <div>
-      <h2>Hi, we're Honnibear 🐻</h2>
-      <p>Honnibear started with a simple idea: the best gifts are the ones made just for you. Every portrait commission is hand-drawn to order, and every website is custom-built around your own words, photos, and story — no templates pretending to be personal.</p>
-      <p>We're a small, independent shop — every purchase directly supports one person's tiny creative business. Thank you for being here. 🐝</p>
+      <h2>Hi, I'm MissTy</h2>
+      <p>I started Honnibear with a simple idea: the best gifts are the ones made just for you. Every portrait commission is hand-drawn to order, and every website is custom-built around your own words, photos, and story, not a template pretending to be personal.</p>
+      <p>I'm a one-person shop, so every purchase goes directly toward my small creative business. Thank you for being here.</p>
     </div>
   </div>
 </section>
@@ -247,17 +268,16 @@
     <div class="section-head">
       <span class="kicker">the collection</span>
       <h2>Shop Honnibear</h2>
-      <p>Buy directly here, or find every listing on our Etsy shop. After checkout you'll fill out a short form with your details — reference photos for art, or your letter/wedding info for a website.</p>
+      <p>Buy directly here, or find every listing on my Etsy shop. After checkout, you'll fill out a short form with your details: reference photos for art, or your letter and wedding info for a website.</p>
     </div>
 
-    <div class="subhead">🎨 Art Commissions</div>
+    <div class="subhead">Art Commissions</div>
     <div class="product-grid">
 
       <div class="card reveal">
-        <div class="card-visual">🖼️</div>
         <div class="card-body">
           <h3>Full Body Commission</h3>
-          <p class="desc">A fully custom, hand-drawn full-body portrait of your subject — you, a loved one, or a pet — in Honnibear's warm, honey-toned style.</p>
+          <p class="desc">A fully custom, hand-drawn full-body portrait of your subject: you, a loved one, or a pet, in my warm, honey-toned style.</p>
           <div class="price-row"><span class="price">$60</span><span>Digital portrait</span></div>
           <div class="card-actions">
             <a class="buy-btn" href="https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05?client_reference_id=full-body-commission" data-product="full-body-commission">Buy Now</a>
@@ -267,10 +287,9 @@
       </div>
 
       <div class="card reveal">
-        <div class="card-visual">🖌️</div>
         <div class="card-body">
           <h3>Half Body Commission</h3>
-          <p class="desc">A custom waist-up portrait, hand-drawn in the same cozy style — a beautiful piece with a little less detail (and a friendlier price) than a full body.</p>
+          <p class="desc">A custom waist-up portrait, hand-drawn in the same cozy style: a beautiful piece with a little less detail, and a friendlier price, than a full body.</p>
           <div class="price-row"><span class="price">$45</span><span>Digital portrait</span></div>
           <div class="card-actions">
             <a class="buy-btn" href="https://buy.stripe.com/9B66oH6Hr815aIve8D5gc06?client_reference_id=half-body-commission" data-product="half-body-commission">Buy Now</a>
@@ -280,10 +299,9 @@
       </div>
 
       <div class="card reveal">
-        <div class="card-visual">🧑‍🎨</div>
         <div class="card-body">
           <h3>Headshot Commission</h3>
-          <p class="desc">A custom headshot/portrait focused on the face — the most affordable way to get a one-of-a-kind Honnibear piece of you or someone you love.</p>
+          <p class="desc">A custom headshot or portrait focused on the face, the most affordable way to get a one-of-a-kind piece of you or someone you love.</p>
           <div class="price-row"><span class="price">$25</span><span>Digital portrait</span></div>
           <div class="card-actions">
             <a class="buy-btn" href="https://buy.stripe.com/00w7sL3vfftx5ob9Sn5gc07?client_reference_id=headshot-commission" data-product="headshot-commission">Buy Now</a>
@@ -294,14 +312,13 @@
 
     </div>
 
-    <div class="subhead">💻 Custom Websites</div>
+    <div class="subhead">Custom Websites</div>
     <div class="product-grid">
 
       <div class="card reveal">
-        <div class="card-visual">💌</div>
         <div class="card-body">
           <h3>Virtual Love Letter Website</h3>
-          <p class="desc">A private, custom-built one-page website written as a love letter — your own words and photos, wrapped in a cozy custom design you can send as a link instead of a card.</p>
+          <p class="desc">A private, custom-built one-page website written as a love letter: your own words and photos, wrapped in a cozy design you can send as a link instead of a card.</p>
           <div class="price-row"><span class="price">$40</span><span>Custom website</span></div>
           <div class="card-actions">
             <a class="buy-btn" href="https://buy.stripe.com/14A28r4zj5SXcQD0hN5gc08?client_reference_id=love-letter-website" data-product="love-letter-website">Buy Now</a>
@@ -311,10 +328,9 @@
       </div>
 
       <div class="card reveal">
-        <div class="card-visual">💍</div>
         <div class="card-body">
           <h3>Wedding RSVP Website</h3>
-          <p class="desc">A custom wedding invitation & RSVP website — your details, schedule, and photos, with a built-in RSVP form, all in your wedding's own colors and style.</p>
+          <p class="desc">A custom wedding invitation and RSVP website: your details, schedule, and photos, with a built-in RSVP form, all in your wedding's own colors and style.</p>
           <div class="price-row"><span class="price">$40</span><span>Custom website</span></div>
           <div class="card-actions">
             <a class="buy-btn" href="https://buy.stripe.com/8x24gz9TD3KP4k77Kf5gc09?client_reference_id=wedding-rsvp-website" data-product="wedding-rsvp-website">Buy Now</a>
@@ -324,6 +340,38 @@
       </div>
 
     </div>
+  </div>
+</section>
+
+<section class="info" id="info">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">the fine print</span>
+      <h2>Commission Info</h2>
+      <p>Everything worth knowing before you commission a piece.</p>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>Payment</h3>
+        <ul>
+          <li>All commissions must be paid upfront.</li>
+          <li>All prices are listed in USD.</li>
+          <li>Pay directly through this site or my Etsy shop. I also accept PayPal, Cash App, Zelle, and Apple Pay directly.</li>
+          <li>Open to alternative arrangements like art trades or gift cards. Just message me first.</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h3>Terms</h3>
+        <ul>
+          <li>Please give credit for all art to me, MissTy.</li>
+          <li>I can draw characters, real people, and pretty much any request, but I don't draw monsters.</li>
+          <li>Prices may change for excessive detail or repeated edits.</li>
+          <li>I reserve the right to decline any commission, whether it's outside my skill level, something I'm not comfortable with, or for any other reason.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="info-note">Questions about any of this? Reach out before you order and I'm happy to talk it through.</p>
   </div>
 </section>
 
@@ -341,13 +389,13 @@
         </div>
         <div class="how-step">
           <div class="num">2</div>
-          <h3>Tell us the details</h3>
-          <p>Right after payment you'll fill out a quick form — reference photos for art, or your letter/wedding info for a website.</p>
+          <h3>Tell me the details</h3>
+          <p>Right after payment, you'll fill out a quick form: reference photos for art, or your letter and wedding info for a website.</p>
         </div>
         <div class="how-step">
           <div class="num">3</div>
           <h3>Get your custom piece</h3>
-          <p>We create it by hand and email you the finished art or your live website link. Track your order status anytime.</p>
+          <p>I create it by hand and email you the finished art or your live website link. Track your order status any time.</p>
         </div>
     </div>
   </div>
@@ -356,14 +404,15 @@
 <footer>
   <div class="wrap">
     <div>
-      <a href="#top" class="brand" style="font-size:1.5rem;">🐻 Honnibear</a>
-      <p style="max-width:32ch; opacity:0.75; font-size:0.92rem; margin-top:12px;">Custom art commissions & keepsake websites, made with love.</p>
+      <a href="#top" class="brand" style="font-size:1.5rem;">Honnibear</a>
+      <p style="max-width:32ch; opacity:0.75; font-size:0.92rem; margin-top:12px;">Custom art commissions and custom websites, made by hand.</p>
     </div>
     <div class="footer-cols">
       <div>
         <h4>Shop</h4>
         <ul>
           <li><a href="#shop">All Commissions</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
           <li><a href="commission-status.html">Order Status</a></li>
           <li><a href="https://www.etsy.com/shop/Honnibear" target="_blank" rel="noopener">Etsy Shop</a></li>
         </ul>
@@ -373,7 +422,7 @@
         <ul>
           <li><a href="https://www.pinterest.com/honnibearr/" target="_blank" rel="noopener">Pinterest</a></li>
           <li><a href="https://www.instagram.com/honnibear_" target="_blank" rel="noopener">Instagram</a></li>
-          <li><a href="mailto:Honnibearr@gmail.com">Email Us</a></li>
+          <li><a href="mailto:Honnibearr@gmail.com">Email Me</a></li>
         </ul>
       </div>
     </div>
@@ -386,6 +435,21 @@
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
   }, {threshold:0.12});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks = document.getElementById('navlinks');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    navLinks.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
 </script>
 
 </body>

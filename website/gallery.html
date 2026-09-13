@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery | Honnibear</title>
+<meta name="description" content="A gallery of past commission work by MissTy at Honnibear.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FCEED5;
+    --cream-lt:#FFF8E9;
+    --gold:#FDB925;
+    --gold-dark:#F0A400;
+    --rust:#B2522D;
+    --brown:#883F20;
+    --line:#E8CFA0;
+    --white:#FFFFFF;
+    --max:1120px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Quicksand',sans-serif;
+    color:var(--brown);
+    background:var(--cream);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Fredoka',sans-serif;}
+  .script{font-family:'Caveat',cursive;}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+
+  .wrap{max-width:var(--max); margin:0 auto; padding:0 24px;}
+  section{padding:72px 0;}
+  @media (max-width:640px){ section{padding:48px 0;} }
+
+  /* ---------- nav (shared with index.html) ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(252,238,213,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{position:relative; display:flex; align-items:center; justify-content:space-between; padding-top:14px; padding-bottom:14px; gap:16px;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:'Fredoka'; font-weight:700; font-size:1.4rem; color:var(--rust); text-decoration:none;}
+  .brand img{width:38px; height:38px;}
+  nav ul{list-style:none; display:flex; gap:28px; margin:0; padding:0;}
+  nav a.navlink{text-decoration:none; font-weight:600; font-size:0.98rem; color:var(--brown); padding:6px 2px; border-bottom:2px solid transparent; transition:border-color .2s;}
+  nav a.navlink:hover{border-color:var(--gold-dark);}
+  nav a.navlink.active{border-color:var(--rust);}
+  .nav-cta{
+    background:var(--rust); color:var(--white)!important; padding:10px 20px; border-radius:999px;
+    font-weight:700; text-decoration:none; font-size:0.92rem; white-space:nowrap;
+  }
+  .nav-mobile-toggle{
+    display:none; background:var(--white); border:1px solid var(--line); border-radius:999px;
+    padding:8px 16px; font-weight:700; font-size:0.85rem; color:var(--rust); cursor:pointer;
+  }
+  @media (max-width:780px){
+    nav ul.navlinks{
+      display:none; position:absolute; top:100%; left:24px; right:24px; margin-top:10px;
+      background:var(--white); border:1px solid var(--line); border-radius:16px;
+      flex-direction:column; gap:4px; padding:12px; box-shadow:0 12px 28px rgba(136,63,32,0.14);
+    }
+    nav ul.navlinks.open{display:flex;}
+    nav a.navlink{padding:10px 12px; border-radius:10px;}
+    nav a.navlink:hover{background:var(--cream-lt); border-color:transparent;}
+    .nav-mobile-toggle{display:inline-block;}
+    .nav-cta{display:none;}
+  }
+
+  /* ---------- header ---------- */
+  .page-header{padding:56px 0 8px; text-align:center;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--gold); color:var(--brown); font-weight:700; font-size:0.82rem;
+    padding:6px 14px; border-radius:999px; margin-bottom:18px; border:1px solid var(--gold-dark);
+  }
+  .page-header h1{font-size:clamp(2rem,4.5vw,2.9rem); color:var(--rust); margin:0 0 14px;}
+  .page-header p{font-size:1.05rem; line-height:1.6; max-width:56ch; margin:0 auto; opacity:0.9;}
+
+  /* ---------- gallery ---------- */
+  .gallery-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:26px;}
+  .gallery-item{
+    background:var(--white); border:1px solid var(--line); border-radius:18px; overflow:hidden;
+    box-shadow:0 10px 24px rgba(136,63,32,0.08);
+  }
+  .gallery-placeholder{
+    aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+    background:var(--cream-lt); border-bottom:1px dashed var(--line);
+    color:var(--brown); opacity:0.55; font-size:0.9rem; text-align:center; padding:24px; line-height:1.5;
+  }
+  .gallery-item img{aspect-ratio:1/1; object-fit:cover; width:100%;}
+  .gallery-item figcaption{padding:14px 16px; font-weight:700; color:var(--rust); font-size:0.95rem;}
+  .gallery-note{text-align:center; opacity:0.7; font-size:0.9rem; margin-top:36px; line-height:1.6;}
+
+  /* ---------- footer ---------- */
+  footer{background:var(--brown); color:var(--cream-lt); padding:52px 0 28px;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:28px;}
+  footer .brand{color:var(--cream-lt);}
+  footer a{text-decoration:none; color:var(--cream-lt); opacity:0.85;}
+  footer a:hover{opacity:1;}
+  .footer-cols{display:flex; gap:64px; flex-wrap:wrap;}
+  .footer-cols h4{font-size:0.85rem; text-transform:uppercase; letter-spacing:0.06em; opacity:0.7; margin:0 0 12px;}
+  .footer-cols ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; font-size:0.94rem;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,0.15); margin-top:36px; padding-top:20px; text-align:center; font-size:0.85rem; opacity:0.7;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="index.html" class="brand"><img src="images/logo.png" alt="Honnibear logo"> Honnibear</a>
+    <ul class="navlinks" id="navlinks">
+      <li><a class="navlink" href="index.html#shop">Shop</a></li>
+      <li><a class="navlink active" href="gallery.html">Gallery</a></li>
+      <li><a class="navlink" href="index.html#about">About</a></li>
+      <li><a class="navlink" href="index.html#info">Commission Info</a></li>
+      <li><a class="navlink" href="commission-status.html">Order Status</a></li>
+    </ul>
+    <button class="nav-mobile-toggle" id="nav-toggle" aria-expanded="false" aria-controls="navlinks">Menu</button>
+    <a class="nav-cta" href="index.html#shop">Commission Now</a>
+  </div>
+</nav>
+
+<header class="page-header">
+  <div class="wrap">
+    <span class="eyebrow">Portfolio</span>
+    <h1>Past Commission Work</h1>
+    <p>A look at pieces completed for past clients. New work gets added here as commissions are finished.</p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="gallery-grid">
+      <figure class="gallery-item">
+        <div class="gallery-placeholder">Full body commission example</div>
+        <figcaption>Full Body Commission</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <div class="gallery-placeholder">Half body commission example</div>
+        <figcaption>Half Body Commission</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <div class="gallery-placeholder">Headshot commission example</div>
+        <figcaption>Headshot Commission</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <div class="gallery-placeholder">Love letter website example</div>
+        <figcaption>Virtual Love Letter Website</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <div class="gallery-placeholder">Wedding RSVP website example</div>
+        <figcaption>Wedding RSVP Website</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <div class="gallery-placeholder">More work coming soon</div>
+        <figcaption>More Coming Soon</figcaption>
+      </figure>
+    </div>
+    <p class="gallery-note">This page is a placeholder scaffold: each tile above is waiting for a real photo. To add one, replace the matching <code>&lt;div class="gallery-placeholder"&gt;</code> in <code>gallery.html</code> with an <code>&lt;img src="images/gallery/your-file.jpg" alt="..."&gt;</code> tag.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a href="index.html" class="brand" style="font-size:1.5rem;">Honnibear</a>
+      <p style="max-width:32ch; opacity:0.75; font-size:0.92rem; margin-top:12px;">Custom art commissions and custom websites, made by hand.</p>
+    </div>
+    <div class="footer-cols">
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="index.html#shop">All Commissions</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="commission-status.html">Order Status</a></li>
+          <li><a href="https://www.etsy.com/shop/Honnibear" target="_blank" rel="noopener">Etsy Shop</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="https://www.pinterest.com/honnibearr/" target="_blank" rel="noopener">Pinterest</a></li>
+          <li><a href="https://www.instagram.com/honnibear_" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="mailto:Honnibearr@gmail.com">Email Me</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Honnibear. All artwork and designs are custom-made and © Honnibear.</div>
+</footer>
+
+<script>
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks = document.getElementById('navlinks');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  }
+</script>
+
+</body>
+</html>

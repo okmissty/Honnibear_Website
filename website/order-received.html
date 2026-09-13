@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tell Us the Details — Honnibear</title>
+<title>Tell Me the Details | Honnibear</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/shared.css">
@@ -19,8 +19,8 @@
 
 <div class="wrap" style="max-width:640px;">
   <div class="panel">
-    <h1 class="page-title">🎉 Thanks for your order!</h1>
-    <p class="subtitle" id="intro-text">One quick step left — tell us the details so we can get started.</p>
+    <h1 class="page-title">Thanks for your order!</h1>
+    <p class="subtitle" id="intro-text">One quick step left: tell me the details so I can get started.</p>
 
     <div id="messages"></div>
     <div id="loading" class="spinner-text">Loading your order…</div>
@@ -45,7 +45,7 @@
 
   if (!sessionId) {
     loadingEl.style.display = 'none';
-    showMessage('We couldn\'t find a Stripe session in this link. If you just paid, use the link from your confirmation email, or <a href="commission-status.html">check your order status here</a>.', 'error');
+    showMessage('I couldn\'t find a Stripe session in this link. If you just paid, use the link from your confirmation email, or <a href="commission-status.html">check your order status here</a>.', 'error');
     return;
   }
 
@@ -99,7 +99,7 @@
         if (!result.ok) throw new Error(result.body.error || 'Something went wrong.');
         formEl.style.display = 'none';
         introEl.textContent = "You're all set!";
-        showMessage("Got it! We'll be in touch by email as we work on your " + order.product_name.toLowerCase() + ". You can check your order status any time using order code <strong>" + order.order_code + "</strong>.", 'success');
+        showMessage("Got it! I'll be in touch by email as I work on your " + order.product_name.toLowerCase() + ". You can check your order status any time using order code <strong>" + order.order_code + "</strong>.", 'success');
       })
       .catch(function(err){
         showMessage(err.message, 'error');
@@ -116,7 +116,7 @@
       const order = result.body;
 
       if (order.status !== 'paid') {
-        introEl.textContent = "You've already sent us your details!";
+        introEl.textContent = "You've already sent your details!";
         showMessage('This order (' + order.order_code + ') is currently <span class="status-pill status-' + order.status + '">' + order.status.replace('_',' ') + '</span>. <a href="commission-status.html">Check full status here</a>.', 'info');
         return;
       }
@@ -127,7 +127,7 @@
     })
     .catch(function(){
       loadingEl.style.display = 'none';
-      showMessage('Could not reach the Honnibear server. Please refresh in a moment, or contact us if this keeps happening.', 'error');
+      showMessage('Could not reach the Honnibear server. Please refresh in a moment, or contact me if this keeps happening.', 'error');
     });
 })();
 </script>
