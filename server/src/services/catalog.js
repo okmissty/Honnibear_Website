@@ -1,8 +1,8 @@
 // Single source of truth for product info, keyed by the slug passed as
-// Stripe's client_reference_id (see website/index.html buy buttons).
-// All products currently route through one shared Stripe Payment Link;
-// this catalog is what lets the webhook and intake form know what was
-// actually purchased.
+// Stripe's client_reference_id (see website/index.html buy buttons). Each
+// product has its own Stripe Payment Link, but the webhook only gets a
+// Checkout Session back — this catalog is what turns that session's
+// client_reference_id into a product name/price/type.
 const CATALOG = {
   'full-body-commission': {
     name: 'Full Body Commission',

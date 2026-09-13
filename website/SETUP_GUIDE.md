@@ -19,22 +19,32 @@ Customer clicks "Buy Now"
   -> customer can check status any time on commission-status.html
 ```
 
-All five products share **one Stripe Payment Link** for now — see `index.html`'s Buy Now buttons, each of which appends `?client_reference_id=<slug>` (e.g. `full-body-commission`). That's how the backend tells products apart without five separate links. If you later create a dedicated Payment Link per product, just update the `href` on each Buy Now button — no backend changes needed as long as the slug still matches `server/src/services/catalog.js`.
+Each product has its own **Stripe Payment Link** — see `index.html`'s Buy Now buttons. Each link also has `?client_reference_id=<slug>` appended (e.g. `full-body-commission`); Stripe echoes that back on the webhook, which is how the backend confirms exactly which product was purchased. The current link-to-product mapping:
+
+| Product | Slug | Payment Link |
+|---|---|---|
+| Full Body Commission | `full-body-commission` | https://buy.stripe.com/3cIdR90j36X1eYL5C75gc05 |
+| Half Body Commission | `half-body-commission` | https://buy.stripe.com/9B66oH6Hr815aIve8D5gc06 |
+| Headshot Commission | `headshot-commission` | https://buy.stripe.com/00w7sL3vfftx5ob9Sn5gc07 |
+| Virtual Love Letter Website | `love-letter-website` | https://buy.stripe.com/14A28r4zj5SXcQD0hN5gc08 |
+| Wedding RSVP Website | `wedding-rsvp-website` | https://buy.stripe.com/8x24gz9TD3KP4k77Kf5gc09 |
+
+If a link ever needs to change, update the `href` on that product's Buy Now button in `index.html` — no backend changes needed as long as the `client_reference_id` still matches a slug in `server/src/services/catalog.js`.
 
 ---
 
 ## 2. Stripe setup
 
-1. In your Stripe Dashboard, open the Payment Link already in use (or create one) and confirm **"After payment" -> "Don't show a confirmation page"** is *not* selected — instead choose **"Redirect customers to your website"** and set the redirect URL to:
+1. In your Stripe Dashboard, open **each of the five Payment Links above** (Payment Links → find it → Edit) and confirm **"After payment" -> "Don't show a confirmation page"** is *not* selected — instead choose **"Redirect customers to your website"** and set the redirect URL to:
    ```
    https://yourdomain.com/order-received.html?session_id={CHECKOUT_SESSION_ID}
    ```
-   (Stripe substitutes `{CHECKOUT_SESSION_ID}` automatically.)
+   (Stripe substitutes `{CHECKOUT_SESSION_ID}` automatically.) This has to be set on all five links individually — it's a per-link setting.
 2. Go to **Developers -> Webhooks -> Add endpoint**, set the URL to your deployed backend:
    ```
    https://your-backend.onrender.com/api/webhooks/stripe
    ```
-   Subscribe to the `checkout.session.completed` event.
+   Subscribe to the `checkout.session.completed` event. This is a single account-level endpoint — it receives events from all five Payment Links automatically, no per-link webhook setup needed.
 3. Copy the endpoint's **Signing secret** (`whsec_...`) into your backend's `STRIPE_WEBHOOK_SECRET` env var.
 4. Copy your **Secret key** (`sk_test_...` while testing, `sk_live_...` when live) into `STRIPE_SECRET_KEY`.
 

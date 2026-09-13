@@ -75,7 +75,7 @@ server/                  # Backend API — Node/Express + PostgreSQL
 
 ## How checkout maps to a product
 
-All five products currently share **one Stripe Payment Link**. Each "Buy Now" button appends `?client_reference_id=<product-slug>` to that link (e.g. `...?client_reference_id=full-body-commission`) — Stripe stores that on the Checkout Session and echoes it back in the webhook, which is how the backend knows what was purchased without needing five separate Payment Links. See `server/src/services/catalog.js` for the slug list.
+Each product has its own **Stripe Payment Link**, and each "Buy Now" button also appends `?client_reference_id=<product-slug>` to its link (e.g. `...?client_reference_id=full-body-commission`) — Stripe stores that on the Checkout Session and echoes it back in the webhook, which is how the backend confirms exactly which product was purchased. See `server/src/services/catalog.js` for the slug list, and the Buy Now buttons in `website/index.html` for the link-to-slug mapping.
 
 ## Local development
 
